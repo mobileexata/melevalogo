@@ -1,6 +1,8 @@
 <?php
-class ControllerExtensionModuleOcProduct extends Controller {
-	public function index($setting) {
+class ControllerExtensionModuleOcProduct extends Controller
+{
+	public function index($setting)
+	{
 		$this->load->language('extension/module/ocproducts');
 		$this->load->model('catalog/product');
 		$this->load->model('extension/module/ocproduct');
@@ -13,7 +15,7 @@ class ControllerExtensionModuleOcProduct extends Controller {
 			$setting['limit'] = 4;
 		}
 		$results = array();
-		if($setting['option'] == 0) {
+		if ($setting['option'] == 0) {
 			if (!empty($setting['product'])) {
 				$results = array();
 				$products = array_slice($setting['product'], 0, (int)$setting['limit']);
@@ -21,19 +23,19 @@ class ControllerExtensionModuleOcProduct extends Controller {
 					$results[] = $this->model_catalog_product->getProduct($product_id);
 				}
 			}
-		} else if ($setting['option']==1){
-			if($setting['productfrom']==1){
+		} else if ($setting['option'] == 1) {
+			if ($setting['productfrom'] == 1) {
 				$data['filter_category_id'] = $setting['cate_id'];
 				$results = $this->model_catalog_product->getProducts($data);
-			} else if($setting['productfrom']==0) {
+			} else if ($setting['productfrom'] == 0) {
 				if (!empty($setting['productcate'])) {
 					$products = array_slice($setting['productcate'], 0, (int)$setting['limit']);
 					foreach ($products as $product_id) {
 						$results[] = $this->model_catalog_product->getProduct($product_id);
 					}
-				}			
+				}
 			} else {
-				if ($setting['input_specific_product']==0){
+				if ($setting['input_specific_product'] == 0) {
 					$data['products'] = array();
 					$filter_data = array(
 						'filter_category_id' => $setting['cate_id'],
@@ -43,24 +45,24 @@ class ControllerExtensionModuleOcProduct extends Controller {
 						'limit' => $setting['limit'],
 					);
 					$results = $this->model_catalog_product->getProducts($filter_data);
-				} else if ($setting['input_specific_product']==1){
+				} else if ($setting['input_specific_product'] == 1) {
 					$filter_data = array(
-					'sort'  => 'pd.name',
-					'order' => 'ASC',
-					'start' => 0,
-					'limit' => $setting['limit']
+						'sort'  => 'pd.name',
+						'order' => 'ASC',
+						'start' => 0,
+						'limit' => $setting['limit']
 					);
-					$results = $this->model_extension_module_ocproduct->getProductSpecialsCategory($filter_data, $setting['cate_id']);		
-				} else if ($setting['input_specific_product']==2){
+					$results = $this->model_extension_module_ocproduct->getProductSpecialsCategory($filter_data, $setting['cate_id']);
+				} else if ($setting['input_specific_product'] == 2) {
 					$data['products'] = array();
-					$results = $this->model_extension_module_ocproduct->getBestSellerProductsCategory($setting['limit'], $setting['cate_id']);				
-				} else{
+					$results = $this->model_extension_module_ocproduct->getBestSellerProductsCategory($setting['limit'], $setting['cate_id']);
+				} else {
 					$data['products'] = array();
-					$results = $this->model_extension_module_ocproduct->getMostViewedProductsCategory($setting['limit'],  $setting['cate_id']);		
+					$results = $this->model_extension_module_ocproduct->getMostViewedProductsCategory($setting['limit'],  $setting['cate_id']);
 				}
 			}
 		} else {
-			if ($setting['autoproduct']==0){
+			if ($setting['autoproduct'] == 0) {
 				$data['products'] = array();
 				$filter_data = array(
 					'sort'  => 'p.date_added',
@@ -69,24 +71,24 @@ class ControllerExtensionModuleOcProduct extends Controller {
 					'limit' => $setting['limit']
 				);
 				$results = $this->model_catalog_product->getProducts($filter_data);
-			} else if ($setting['autoproduct']==1){
+			} else if ($setting['autoproduct'] == 1) {
 				$filter_data = array(
-				'sort'  => 'pd.name',
-				'order' => 'ASC',
-				'start' => 0,
-				'limit' => $setting['limit']
+					'sort'  => 'pd.name',
+					'order' => 'ASC',
+					'start' => 0,
+					'limit' => $setting['limit']
 				);
 				$results = $this->model_catalog_product->getProductSpecials($filter_data);
-			} else if ($setting['autoproduct']==2){
-					$data['products'] = array();
-				$results = $this->model_catalog_product->getBestSellerProducts($setting['limit']);
-			} else if ($setting['autoproduct']==3){
-					$data['products'] = array();
-				$results = $this->model_catalog_product->getPopularProducts($setting['limit']);
-			}else{
+			} else if ($setting['autoproduct'] == 2) {
 				$data['products'] = array();
-				$results = $this->model_extension_module_ocproduct->getDealProducts($setting['limit']);		
-			}		
+				$results = $this->model_catalog_product->getBestSellerProducts($setting['limit']);
+			} else if ($setting['autoproduct'] == 3) {
+				$data['products'] = array();
+				$results = $this->model_catalog_product->getPopularProducts($setting['limit']);
+			} else {
+				$data['products'] = array();
+				$results = $this->model_extension_module_ocproduct->getDealProducts($setting['limit']);
+			}
 		}
 		$data['use_quickview'] = (int) $this->config->get('module_octhemeoption_quickview')[$store_id];
 		$data['use_catalog'] = (int) $this->config->get('module_octhemeoption_catalog')[$store_id];
@@ -97,8 +99,9 @@ class ControllerExtensionModuleOcProduct extends Controller {
 			'sort'  => 'p.date_added',
 			'order' => 'DESC',
 			'start' => 0,
-			'limit' => 10
+			'limit' => 100
 		);
+		//produtos novos - product new news
 		$new_results = $this->model_catalog_product->getProducts($filter_data);
 		/* End */
 		if ($results) {
@@ -131,38 +134,38 @@ class ControllerExtensionModuleOcProduct extends Controller {
 					$rating = false;
 				}
 				$date_end = false;
-				if ($setting['countdown']){
+				if ($setting['countdown']) {
 					$date_end = $this->model_extension_module_ocproduct->getSpecialCountdown($result['product_id']);
 					if ($date_end === '0000-00-00') {
 						$date_end = false;
 					}
 				}
 				/* Product Rotator */
-				if($product_rotator_status == 1) {
-				  $this->load->model('catalog/ocproductrotator');
-				  $this->load->model('tool/image');
-				  $product_id = $result['product_id'];
-				  $product_rotator_image = $this->model_catalog_ocproductrotator->getProductRotatorImage($product_id);
-				  if($product_rotator_image) {
-				    $rotator_image_width = $setting['width'];
-				    $rotator_image_height = $setting['height'];
-				    $data['rotator_image'] = $this->model_tool_image->resize($product_rotator_image, $rotator_image_width, $rotator_image_height);  
-				  } else {
-				    $data['rotator_image'] = false;
-				  } 
+				if ($product_rotator_status == 1) {
+					$this->load->model('catalog/ocproductrotator');
+					$this->load->model('tool/image');
+					$product_id = $result['product_id'];
+					$product_rotator_image = $this->model_catalog_ocproductrotator->getProductRotatorImage($product_id);
+					if ($product_rotator_image) {
+						$rotator_image_width = $setting['width'];
+						$rotator_image_height = $setting['height'];
+						$data['rotator_image'] = $this->model_tool_image->resize($product_rotator_image, $rotator_image_width, $rotator_image_height);
+					} else {
+						$data['rotator_image'] = false;
+					}
 				} else {
-				  $data['rotator_image'] = false;       
+					$data['rotator_image'] = false;
 				}
 				/* End Product Rotator */
 				$is_new = false;
-				if ($new_results) { 
-					foreach($new_results as $new_r) {
-						if($result['product_id'] == $new_r['product_id']) {
+				if ($new_results) {
+					foreach ($new_results as $new_r) {
+						if ($result['product_id'] == $new_r['product_id']) {
 							$is_new = true;
 						}
 					}
 				}
-				
+
 				if ($result['quantity'] <= 0) {
 					$stock = $result['stock_status'];
 				} elseif ($this->config->get('config_stock_display')) {
@@ -183,7 +186,7 @@ class ControllerExtensionModuleOcProduct extends Controller {
 						);
 					}
 				}
-				
+
 				$data['products'][] = array(
 					'product_id'  => $result['product_id'],
 					'thumb'       => $image,
@@ -206,45 +209,45 @@ class ControllerExtensionModuleOcProduct extends Controller {
 				);
 			}
 		}
-		$number_random = rand ( 1 , 1000 );
+		$number_random = rand(1, 1000);
 		$data['config_module'] = array(
-				'name' => $setting['name'],
-				'class' => $setting['class'],
-				'type' => (int) $setting['type'],
-				'slider' => (int) $setting['slider'],
-				'auto' => (int) $setting['auto'],
-				'loop' => (int) $setting['loop'],
-				'margin' => (int) $setting['margin'],
-				'nrow' => (int) $setting['nrow'],
-				'items' => (int) $setting['items'],
-				'time' => (int) $setting['time'],
-				'speed' => (int) $setting['speed'],
-				'row' => (int) $setting['row'],
-				'navigation' => (int) $setting['navigation'],
-				'pagination' => (int) $setting['pagination'],
-				'showcart' => (int) $setting['showcart'],
-				'showdescription' => (int) $setting['showdescription'],
-				'showwishlist' => (int) $setting['showwishlist'],
-				'showcompare' => (int) $setting['showcompare'],
-				'showquickview' => (int) $setting['showquickview'],
-				'desktop' => (int) $setting['desktop'],
-				'tablet' => (int) $setting['tablet'],
-				'mobile' => (int) $setting['mobile'],
-				'smobile' => (int) $setting['smobile'],
-				'title_lang' => $setting['title_lang'],
-				'sub_title_lang' => $setting['sub_title_lang'],
-				'description' => (int) $setting['description'],
-				'countdown' => (int) $setting['countdown'],
-				'rotator'  => (int) $setting['rotator'],
-				'newlabel'  => (int) $setting['newlabel'],
-				'salelabel'  => (int) $setting['salelabel'],
-				'module_id' => $number_random
-			);
-			if (isset($setting['module_description'][$this->config->get('config_language_id')])) {
-				$data['module_description'] = html_entity_decode($setting['module_description'][$this->config->get('config_language_id')]['description'], ENT_QUOTES, 'UTF-8');
-				if ($data['module_description'] == '<p><br><p>') $data['module_description']= '';
-		   }
-			//echo '<pre>'; print_r($data['config_module']); die;
-			return $this->load->view('extension/module/ocproduct', $data);
+			'name' => $setting['name'],
+			'class' => $setting['class'],
+			'type' => (int) $setting['type'],
+			'slider' => (int) $setting['slider'],
+			'auto' => (int) $setting['auto'],
+			'loop' => (int) $setting['loop'],
+			'margin' => (int) $setting['margin'],
+			'nrow' => (int) $setting['nrow'],
+			'items' => (int) $setting['items'],
+			'time' => (int) $setting['time'],
+			'speed' => (int) $setting['speed'],
+			'row' => (int) $setting['row'],
+			'navigation' => (int) $setting['navigation'],
+			'pagination' => (int) $setting['pagination'],
+			'showcart' => (int) $setting['showcart'],
+			'showdescription' => (int) $setting['showdescription'],
+			'showwishlist' => (int) $setting['showwishlist'],
+			'showcompare' => (int) $setting['showcompare'],
+			'showquickview' => (int) $setting['showquickview'],
+			'desktop' => (int) $setting['desktop'],
+			'tablet' => (int) $setting['tablet'],
+			'mobile' => (int) $setting['mobile'],
+			'smobile' => (int) $setting['smobile'],
+			'title_lang' => $setting['title_lang'],
+			'sub_title_lang' => $setting['sub_title_lang'],
+			'description' => (int) $setting['description'],
+			'countdown' => (int) $setting['countdown'],
+			'rotator'  => (int) $setting['rotator'],
+			'newlabel'  => (int) $setting['newlabel'],
+			'salelabel'  => (int) $setting['salelabel'],
+			'module_id' => $number_random
+		);
+		if (isset($setting['module_description'][$this->config->get('config_language_id')])) {
+			$data['module_description'] = html_entity_decode($setting['module_description'][$this->config->get('config_language_id')]['description'], ENT_QUOTES, 'UTF-8');
+			if ($data['module_description'] == '<p><br><p>') $data['module_description'] = '';
+		}
+		//echo '<pre>'; print_r($data['config_module']); die;
+		return $this->load->view('extension/module/ocproduct', $data);
 	}
 }

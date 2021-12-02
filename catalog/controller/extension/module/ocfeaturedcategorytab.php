@@ -1,25 +1,27 @@
 <?php
-class ControllerExtensionModuleOcfeaturedcategorytab extends Controller {
+class ControllerExtensionModuleOcfeaturedcategorytab extends Controller
+{
 
-    public function index($setting) {
+    public function index($setting)
+    {
         $this->load->model('catalog/product');
         $this->load->model('catalog/category');
         $this->load->model('extension/module/ocfeaturedcategory');
         $this->load->model('tool/image');
-		
-		$this->load->language('extension/module/ocfeaturedcategorytab');
+
+        $this->load->language('extension/module/ocfeaturedcategorytab');
 
         if (empty($setting['limit'])) {
             $setting['limit'] = 10;
         }
 
-        if(isset($setting['rotator']) && $setting['rotator']) {
+        if (isset($setting['rotator']) && $setting['rotator']) {
             $product_rotator_status = (int) $this->config->get('ocproductrotator_status');
         } else {
             $product_rotator_status = 0;
         }
 
-        if(isset($setting['thumbnail']) && $setting['thumbnail']) {
+        if (isset($setting['thumbnail']) && $setting['thumbnail']) {
             $use_thumbnail = true;
         } else {
             $use_thumbnail = false;
@@ -59,13 +61,13 @@ class ControllerExtensionModuleOcfeaturedcategorytab extends Controller {
                 $filter_data['filter_category_id'] = $_category['category_id'];
 
                 $data['categories'][] = array(
-                    'category_id'  		=> $_category['category_id'],
+                    'category_id'          => $_category['category_id'],
                     'homethumb_image'   => $homethumb_image,
-					'thumbnail_image'   => $thumbnail_image,
-                    'name'        		=> $_category['name'],
-                    'description' 		=> utf8_substr(strip_tags(html_entity_decode($_category['description'], ENT_QUOTES, 'UTF-8')), 0, 80) . 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod',
-                    'href'        		=> $this->url->link('product/category', 'path=' . $_category['category_id']),
-                    'products'          => $this->getProductFromData($filter_data,$setting)
+                    'thumbnail_image'   => $thumbnail_image,
+                    'name'                => $_category['name'],
+                    'description'         => utf8_substr(strip_tags(html_entity_decode($_category['description'], ENT_QUOTES, 'UTF-8')), 0, 80) . 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod',
+                    'href'                => $this->url->link('product/category', 'path=' . $_category['category_id']),
+                    'products'          => $this->getProductFromData($filter_data, $setting)
                 );
             }
 
@@ -82,7 +84,7 @@ class ControllerExtensionModuleOcfeaturedcategorytab extends Controller {
                 'f_rows' => $setting['rows']
             );
 
-            $alias = str_replace(' ','_',$setting['name']);
+            $alias = str_replace(' ', '_', $setting['name']);
             $data['category_alias'] = $alias;
 
             $data['tab_effect'] = 'wiggle';
@@ -94,15 +96,16 @@ class ControllerExtensionModuleOcfeaturedcategorytab extends Controller {
 
         $data['status'] = $setting['status'];
 
-        if($data['categories']) {
+        if ($data['categories']) {
             return $this->load->view('extension/module/ocfeaturedcategorytab', $data);
         }
     }
 
-    public function getProductFromData($data= array(), $setting = array()) {
+    public function getProductFromData($data = array(), $setting = array())
+    {
         $product_list = array();
 
-        if($data['rotator_status']) {
+        if ($data['rotator_status']) {
             $product_rotator_status = (int) $this->config->get('ocproductrotator_status');
         } else {
             $product_rotator_status = 0;
@@ -113,13 +116,13 @@ class ControllerExtensionModuleOcfeaturedcategorytab extends Controller {
             'sort'  => 'p.date_added',
             'order' => 'DESC',
             'start' => 0,
-            'limit' => 10
+            'limit' => 100
         );
-
+        //produtos novos - product new news
         $new_results = $this->model_catalog_product->getProducts($filter_data);
         /* End */
 
-		$results = $this->model_catalog_product->getProducts($data);
+        $results = $this->model_catalog_product->getProducts($data);
         foreach ($results as $result) {
             if ($result['image']) {
                 $image = $this->model_tool_image->resize($result['image'], 200, 200);
@@ -145,12 +148,12 @@ class ControllerExtensionModuleOcfeaturedcategorytab extends Controller {
                 $rating = false;
             }
 
-            if($product_rotator_status == 1) {
+            if ($product_rotator_status == 1) {
                 $this->load->model('catalog/ocproductrotator');
                 $product_id = $result['product_id'];
                 $product_rotator_image = $this->model_catalog_ocproductrotator->getProductRotatorImage($product_id);
 
-                if($product_rotator_image) {
+                if ($product_rotator_image) {
                     $rotator_image = $this->model_tool_image->resize($product_rotator_image, $setting['width'], $setting['height']);
                 } else {
                     $rotator_image = false;
@@ -158,12 +161,12 @@ class ControllerExtensionModuleOcfeaturedcategorytab extends Controller {
             } else {
                 $rotator_image = false;
             }
-				
 
-			$is_new = false;
+
+            $is_new = false;
             if ($new_results) {
-                foreach($new_results as $new_r) {
-                    if($result['product_id'] == $new_r['product_id']) {
+                foreach ($new_results as $new_r) {
+                    if ($result['product_id'] == $new_r['product_id']) {
                         $is_new = true;
                     }
                 }
@@ -171,16 +174,16 @@ class ControllerExtensionModuleOcfeaturedcategorytab extends Controller {
 
             $product_list[] = array(
                 'product_id' => $result['product_id'],
-                'thumb'   	 => $image,
-				'rotator_image' => $rotator_image,
-                'name'    	 => $result['name'],
-                'price'   	 => $price,
-                'special' 	 => $special,
-				'is_new'      => $is_new,
+                'thumb'        => $image,
+                'rotator_image' => $rotator_image,
+                'name'         => $result['name'],
+                'price'        => $price,
+                'special'      => $special,
+                'is_new'      => $is_new,
                 'rating'     => $rating,
                 'description' => utf8_substr(trim(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8'))), 0, $this->config->get('theme_' . $this->config->get('config_theme') . '_product_description_length')) . '..',
                 'reviews'    => sprintf($this->language->get('text_reviews'), (int)$result['reviews']),
-                'href'    	 => $this->url->link('product/product', 'product_id=' . $result['product_id']),
+                'href'         => $this->url->link('product/product', 'product_id=' . $result['product_id']),
             );
         }
 
