@@ -203,7 +203,9 @@ class ModelCatalogProduct extends Model
 
 			$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 		}
-
+		$fp = fopen($_SERVER['DOCUMENT_ROOT'] . "/log-proprio.txt", "wb");
+		fwrite($fp, $sql);
+		fclose($fp);
 		$product_data = array();
 
 		$query = $this->db->query($sql);
