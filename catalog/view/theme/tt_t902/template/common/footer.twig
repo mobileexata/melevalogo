@@ -1,0 +1,289 @@
+<footer>
+	<div class="container">
+	<div class="footer-top">
+		<div class="row">
+			<div class="col1 col-md-3-person col-sm-6 col-xs-12 col-footer">
+			  {% if block4 %}
+				{{ block4 }}
+				{% endif %}
+			</div>
+			  <div class="col2 col-md-3-person col-sm-6 col-xs-12 col-footer">
+				<div class="footer-title"><h5>{{ text_information }}</h5></div>
+				<div class="footer-content">
+					<ul class="list-unstyled text-content">
+					 {% if informations %}
+					 {% for information in informations %}
+					  <li><a href="{{ information.href }}">{{ information.title }}</a></li>
+					  {% endfor %}
+					  {% endif %}
+					<li><a href="{{ contact }}">{{ text_contact }}</a></li>
+					</ul>
+				</div>
+			  </div>
+			  <div class="col3 col-md-3-person col-sm-6 col-xs-12 col-footer">
+				<div class="footer-title"><h5>{{ text_extra }}</h5></div>
+				<div class="footer-content">
+					<ul class="list-unstyled text-content">
+					  {# <li><a href="{{ manufacturer }}">{{ text_manufacturer }}</a></li> #}
+					  {# <li><a href="{{ voucher }}">{{ text_voucher }}</a></li> #}
+					  {# <li><a href="{{ affiliate }}">{{ text_affiliate }}</a></li> #}
+					  <li><a href="{{ special }}">{{ text_special }}</a></li>
+					 <li><a href="{{ return }}">{{ text_return }}</a></li>
+					</ul>
+				</div>
+			  </div>
+			  <div class="col4 col-md-3-person col-sm-6 col-xs-12 col-footer">
+					{% if block5 %}
+						{{ block5 }}
+					{% endif %}	
+				</div>
+				<div class="col4 col-md-1 col-sm-6 col-xs-12">
+					<div class="img-produtos-originais">
+						<img src="image/catalog/cart/selo.png">
+					</div>
+				</div>
+		</div>
+	  </div>
+	</div>
+	<div class="footer-bottom">
+		<div class="container">
+			<div class="container-inner">
+				<div class="footer-copyright">
+					<p>{{ powered }}</p>
+				</div>
+				{% if block7 %}
+					{{ block7 }}
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<div id="back-top"><i class="fa fa-angle-double-up"></i></div>
+</footer>
+<div id="coockiesLS" style="display: none;">
+	<div class="cookieAgree">
+		<div class="cookieContent">
+			<span>
+				Este site utiliza também cookies de terceiros para lhe enviar publicidade de acordo com as suas preferências decorrentes da sua atividade de navegação.
+				Os dados coletados através de cookies serão enviados e armazenados em servidores na Europa e nos Estados Unidos.
+				Se você continuar a navegar neste site, se você fechar este banner, rolar a página ou selecionar uma parte deste site, você concorda com o uso de cookies e com a transferência e armazenamento de seus dados na Europa e nos Estados Unidos.
+			</span>
+			<div class="cookieAgreeButton">
+				<button id="cookieButton" onclick="setCookieAgree();">OK</button>
+			</div>
+		</div>
+	</div>
+</div>
+<style>
+	.cookieAgree {
+		z-index: 1000;
+		background: rgba(0,0,0,.8);
+		position: fixed;
+		bottom: 0;
+		border-top: none;
+		left: 0;
+		right: 0;
+	}
+	.cookieContent {
+		border: 0;
+		margin-left: auto;
+		margin-right: auto;
+		padding: 5px 30px;
+		display: -ms-flexbox;
+		display: flex;
+		width: auto;
+		-ms-flex-align: center;
+		align-items: center;
+	}
+
+	.cookieContent span {
+		font-weight: 400;
+		font-size: 11px;
+		display: inline-block;
+		color: #fff;
+		padding: 0 1em 0 0;
+		line-height: 140%;
+	}
+
+	.cookieContent #cookieButton, .cookieContent span {
+		font-family: 'Open Sans',Helvetica,sans-serif;
+	}
+
+	.cookieContent #cookieButton {
+		font-weight: 700;
+		cursor: pointer;
+		font-size: 12px;
+		border: 0;
+		background: #fff;
+		color: #000;
+		border-radius: 0;
+		margin: 1em 0;
+		padding: 10px 20px;
+	}
+
+	.cookieContent #cookieButton, .cookieContent span {
+		font-family: 'Open Sans',Helvetica,sans-serif;
+	}
+
+	.img-produtos-originais {
+		width: 200px;
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	@media (min-width: 992px) {
+		.col-md-3-person {
+				width: 22% !important;
+		}
+		.img-produtos-originais {
+			margin-left: -8rem;
+			transition: .4s;
+		}
+		.img-produtos-originais:hover {
+			transform: scale(1.05);
+		}
+
+		.img-compre-por-marca {
+			max-width: 200px !important;
+		}
+
+		.input-subscribe-email {
+			width: 300px;
+		}
+		
+		.slick-prev:before, .slick-next:before {
+			color: black !important;
+		}
+
+	}
+
+	.slick-prev:before, .slick-next:before {
+		color: white;
+	}
+
+	.warning {
+		color: red;
+	}
+	.success {
+		color: green;
+	}
+	.margin5{
+		margin: 0 5px;
+	}
+	.mt-2{
+		margin-top: 1rem;
+	}
+	.img-compre-por-marca {
+		display: block !important;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.font-bebasneue {
+		font-family: "open-sans-bold";
+		text-transform: uppercase;
+		letter-spacing: 0.2em;
+		font-size: 26px;
+	}
+</style>
+
+<script>
+	function setCookieAgree() {
+		$('#coockiesLS').hide();
+		localStorage.setItem('coockiesLS', 1);
+	}
+
+	$(document).ready(function(){
+		// hide #back-top first
+		$("#back-top").hide();
+		// fade in #back-top
+		$(function () {
+			$(window).scroll(function () {
+				if ($(this).scrollTop() > $('body').height()/3) {
+					$('#back-top').fadeIn();
+				} else {
+					$('#back-top').fadeOut();
+				}
+			});
+			// scroll body to 0px on click
+			$('#back-top').click(function () {
+				$('body,html').animate({scrollTop: 0}, 800);
+				return false;
+			});
+		});
+
+		if (!localStorage.getItem('coockiesLS'))
+			$('#coockiesLS').show();
+
+		$('#compre-por-marca').slick({
+			//dots: true,
+			slidesToShow: 4,
+			slidesToScroll: 1,
+			autoplay: true,
+			autoplaySpeed: 2000,
+			responsive: [
+				{
+					breakpoint: 480,
+					settings: {
+						slidesToShow: 3,
+						slidesToScroll: 3
+					}
+				}
+			]
+		});
+	});
+</script>
+{% for script in scripts %}
+	<script src="{{ script }}" ></script>
+{% endfor %}
+
+<script type="text/javascript">
+function email_subscribe(){
+	$.ajax({
+		type: 'post',
+		url: 'index.php?route=extension/module/newslettersubscribe/subscribe2',
+		dataType: 'html',
+		data: $("#subscribe").serialize(),
+		success: function (html) {
+			console.log(html);
+			try {
+				eval(html);
+			} catch (e) {}
+		}
+	});
+}
+</script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#subscribe_email').keypress(function(e) {
+			if(e.which == 13) {
+				e.preventDefault();
+				email_subscribe();
+			}
+		});
+	});
+</script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-209345084-1">
+</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-209345084-1');
+</script>
+<!-- Hotjar Tracking Code for https://melevalogo.com.br/ -->
+<script>
+    (function(h,o,t,j,a,r){
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h._hjSettings={hjid:2659452,hjsv:6};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+</script>
+</div><!-- wrapper -->
+</body>
+</html>

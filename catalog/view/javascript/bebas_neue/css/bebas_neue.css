@@ -1,0 +1,6 @@
+@charset "UTF-8";
+@font-face{font-family:"bebasneue";src:url("../fonts/BebasNeue-Regular.otf");src:url("../fonts/BebasNeue-Regular.ttf");font-weight:normal;font-style:normal;}
+
+@font-face{font-family:"BebasNeue-Light";src:url("../fonts/BebasNeue-Light.otf");font-weight:300;font-style:normal;}
+
+@font-face{font-family:"open-sans-bold";src:url("../fonts/Open_Sans/OpenSans-Bold.ttf");font-weight:700;font-style:normal;}

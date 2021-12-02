@@ -1,0 +1,36 @@
+<div class="table-responsive">
+  <table id="rede-rest" style="min-width:100% !important;" class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th style="min-width: 100px !important;" class="text-center">{{ column_date_added }}</th>
+        <th style="min-width: 200px !important;" class="text-left">{{ column_customer }}</th>
+        <th style="min-width: 90px !important;" class="text-center">{{ column_type }}</th>
+        <th class="text-center">{{ column_status }}</th>
+        <th style="min-width: 100px !important;" class="text-center">{{ column_action }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if transactions %}
+      {% for transaction in transactions %}
+      <tr>
+        <td class="text-center">{{ transaction.date_added }}</td>
+        <td class="text-left">{{ transaction.customer }}</td>
+        <td class="text-center">{{ transaction.type }}</td>
+        <td class="text-center">
+          <span class="badge" style="background-color: {{ transaction.status_color }};">
+            {{ transaction.status_message }}
+          </span>
+        </td>
+        <td class="text-center">
+          <a href="{{ transaction.view_transaction }}" data-toggle="tooltip" title="{{ button_info }}" class="btn btn-info"><i class="fa fa-eye"></i></a>
+        </td>
+      </tr>
+      {% endfor %}
+      {% else %}
+      <tr>
+        <td class="text-center" colspan="5">{{ text_no_results }}</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>

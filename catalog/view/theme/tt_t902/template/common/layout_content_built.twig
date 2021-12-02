@@ -1,0 +1,88 @@
+{% if widgets %}
+    {% for rows in widgets %}
+    <div class="main-row {{ rows.class }}">
+        <div class="container">
+            <div class="row">
+                {% for main_col in rows.main_cols %}
+                <div class="main-col col-sm-12 col-md-{{ main_col.format }}">
+                    {% if main_col.sub_rows %}
+                        {% for sub_row in main_col.sub_rows %}
+                        <div class="row sub-row">
+                            {% for sub_col in sub_row %}
+                                <div class="sub-col col-sm-12 col-md-{{ sub_col.format }}">
+                                    {% if sub_col.info %}
+                                        {% for modules in sub_col.info %}
+                                            {{ modules }}
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endif %}
+{# Compre por marca #}
+<div class="container" style="margin-top: 3rem;">
+	<h2 class="text-center font-bebasneue">Leva logo por marca</h2>
+	<div id="compre-por-marca">
+		<div>
+			<a href="index.php?route=product/manufacturer/info&manufacturer_id=792">
+				<img src="image/catalog/carousel/ck.png" class="img-compre-por-marca" alt="Calvin Klein">
+			</a>
+		</div>
+		{# <div>
+			<a href="COCA-COLA">
+				<img src="image/catalog/carousel/coke.png" class="img-compre-por-marca" alt="Coca-Cola">
+			</a>
+		</div> #}
+		<div>
+			<a href="index.php?route=product/manufacturer/info&manufacturer_id=831">
+				<img src="image/catalog/carousel/Colcci.png" class="img-compre-por-marca" alt="Colcci">
+			</a>
+		</div>
+		<div>
+			<a href="index.php?route=product/manufacturer/info&manufacturer_id=860">
+				<img src="image/catalog/carousel/JJ.png" class="img-compre-por-marca" alt="John John">
+			</a>
+		</div>
+		<div>
+			<a href="index.php?route=product/manufacturer/info&manufacturer_id=37">
+				<img src="image/catalog/carousel/Levis.png" class="img-compre-por-marca" alt="Levis">
+			</a>
+		</div>
+		<div>
+			<a href="index.php?route=product/manufacturer/info&manufacturer_id=845">
+				<img src="image/catalog/carousel/Reserva.png" class="img-compre-por-marca" alt="Reserva">
+			</a>
+		</div>
+	</div>
+</div>
+{# End compre por marca #}
+
+{# Newsletter #}
+<div class="container" id="dialog" style="margin-top: 3rem;">
+	<div class="text-center">
+		<div class="newletter-title">
+			<h2 class="font-bebasneue">Receba novidades e promoções</h2>
+		</div>
+		<div class="box-content newleter-content">
+			<div id="frm_subscribe">
+				<form name="subscribe" id="subscribe" class="form-inline">
+					<div class="form-group">
+						<label for="subscribe_email">* Digite seu endereço do e-mail aqui...</label>
+						<input type="text" value="" name="subscribe_email" id="subscribe_email" class="form-control margin5 input-subscribe-email">
+					</div>
+					<button type="button" class="button margin5" onclick="email_subscribe()" style="line-height: 34px !important;">Inscrever-Se!</button>
+				</form>
+			</div><!-- /#frm_subscribe -->
+		</div>
+		<div id="notification-normal2" class="mt-2"></div>
+	</div>
+</div>
+{# End newsletter #}

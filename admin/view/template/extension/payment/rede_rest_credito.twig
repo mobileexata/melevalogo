@@ -1,0 +1,1134 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-payment" input type="hidden" id="save_stay" name="save_stay" value="1" data-toggle="tooltip" title="{{ button_save_stay }}" class="btn btn-success"><i class="fa fa-save"></i></button>
+        <button type="submit" form="form-payment" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+      </div>
+      <h1>{{ heading_title }}</h1> <span class="badge">{{ versao }}</span>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}</div>
+    {% endif %}
+    {% if success %}
+    <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}</div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-payment" class="form-horizontal">
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab-geral" data-toggle="tab">{{ tab_geral }}</a></li>
+            <li><a href="#tab-bandeiras" data-toggle="tab">{{ tab_bandeiras }}</a></li>
+            <li><a href="#tab-situacoes" data-toggle="tab">{{ tab_situacoes }}</a></li>
+            <li><a href="#tab-campos" data-toggle="tab">{{ tab_campos }}</a></li>
+            <li><a href="#tab-finalizacao" data-toggle="tab">{{ tab_finalizacao }}</a></li>
+            <li><a href="#tab-clearsale" data-toggle="tab">{{ tab_clearsale }}</a></li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="tab-geral">
+              <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ info_geral }}</div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_lojas }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_lojas }}</span>
+                </div>
+                <div class="col-sm-6">
+                  <div class="well well-sm" style="height: 150px; overflow: auto;">
+                    {% for store in stores_data %}
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" name="stores[]" value="{{ store.store_id }}" {{ store.store_id in stores ? 'checked="checked"' }} />
+                        {{ store.name }}
+                      </label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  <a onclick="$(this).parent().find(':checkbox').prop('checked', true);">{{ text_select_all }}</a> / <a onclick="$(this).parent().find(':checkbox').prop('checked', false);">{{ text_unselect_all }}</a>
+                  {% if error_stores %}
+                  <div class="text-danger">{{ error_stores }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_tipos_clientes }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_tipos_clientes }}</span>
+                </div>
+                <div class="col-sm-6">
+                  <div class="well well-sm" style="height: 150px; overflow: auto;">
+                    {% for customer_group in customer_groups_data %}
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" name="customer_groups[]" value="{{ customer_group.customer_group_id }}" {{ customer_group.customer_group_id in customer_groups ? 'checked="checked"' }} />
+                        {{ customer_group.name }}
+                      </label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  <a onclick="$(this).parent().find(':checkbox').prop('checked', true);">{{ text_select_all }}</a> / <a onclick="$(this).parent().find(':checkbox').prop('checked', false);">{{ text_unselect_all }}</a>
+                  {% if error_customer_groups %}
+                  <div class="text-danger">{{ error_customer_groups }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_total }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_total }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                    <input type="text" name="total" value="{{ total }}" placeholder="" class="form-control" maxlength="6" />
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_geo_zone }}</strong></h5>
+                </div>
+                <div class="col-sm-3">
+                  <select name="geo_zone_id" class="form-control">
+                    <option value="0">{{ text_all_zones }}</option>
+                    {% for geo_zone in geo_zones_data %}
+                    <option value="{{ geo_zone.geo_zone_id }}" {{ geo_zone.geo_zone_id == geo_zone_id ? 'selected="selected"' }}>{{ geo_zone.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_status }}</strong></h5>
+                </div>
+                <div class="col-sm-2">
+                  <select name="status" class="form-control">
+                    <option value="1" {{ status == '1' ? 'selected="selected"' }}>{{ text_enabled }}</option>
+                    <option value="0" {{ status == '0' ? 'selected="selected"' }}>{{ text_disabled }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_sort_order }}</strong></h5>
+                </div>
+                <div class="col-sm-2">
+                  <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-sort"></i></span>
+                    <input type="text" name="sort_order" value="{{ sort_order }}" placeholder="" class="form-control" maxlength="2" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-bandeiras">
+              <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ info_bandeiras }}</div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_minimo }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_minimo }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                    <input type="text" name="minimo" value="{{ minimo }}" placeholder="" class="form-control" maxlength="6" />
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_desconto }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_desconto }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <div class="input-group">
+                    <span class="input-group-addon">%</span>
+                    <input type="text" name="desconto" value="{{ desconto }}" placeholder="" class="form-control" maxlength="6" />
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_soft_descriptor }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_soft_descriptor }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-shopping-cart"></i></span>
+                    <input type="text" name="soft_descriptor" value="{{ soft_descriptor }}" placeholder="" class="form-control" maxlength="13" />
+                  </div>
+                  {% if error_soft_descriptor %}
+                  <div class="text-danger">{{ error_soft_descriptor }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_captura }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_captura }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <select name="captura" class="form-control">
+                    <option value="1" {{ captura == '1' ? 'selected="selected"' }}>{{ text_automatica }}</option>
+                    <option value="0" {{ captura == '0' ? 'selected="selected"' }}>{{ text_manual }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_dias }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_dias }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <label>{{ entry_dias_capturar }}</label>
+                  <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+                    <input type="text" name="dias_capturar" value="{{ dias_capturar }}" placeholder="" class="form-control" maxlength="3" />
+                  </div>
+                  {% if error_dias_capturar %}
+                  <div class="text-danger">{{ error_dias_capturar }}</div>
+                  {% endif %}
+                </div>
+                <div class="col-sm-3">
+                  <label>{{ entry_dias_cancelar_autorizacao }}</label>
+                  <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+                    <input type="text" name="dias_cancelar_autorizacao" value="{{ dias_cancelar_autorizacao }}" placeholder="" class="form-control" maxlength="3" />
+                  </div>
+                  {% if error_dias_cancelar_autorizacao %}
+                  <div class="text-danger">{{ error_dias_cancelar_autorizacao }}</div>
+                  {% endif %}
+                </div>
+                <div class="col-sm-3">
+                  <label>{{ entry_dias_cancelar_captura }}</label>
+                  <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+                    <input type="text" name="dias_cancelar_captura" value="{{ dias_cancelar_captura }}" placeholder="" class="form-control" maxlength="3" />
+                  </div>
+                  {% if error_dias_cancelar_captura %}
+                  <div class="text-danger">{{ error_dias_cancelar_captura }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div style="border-top: 1px solid #ececec; margin-top: 10px; padding-top: 10px;">
+                <ul class="nav nav-pills nav-stacked col-md-2">
+                  <li class="active"><a href="#parcelamentos" data-toggle="tab">{{ text_parcelamentos }}</a></li>
+                  <li><a href="#regras" data-toggle="tab">{{ text_regras }}</a></li>
+                </ul>
+                <div class="tab-content col-md-10">
+                  <div class="tab-pane active" id="parcelamentos">
+                    <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ info_parcelamentos }}</div>
+                    {% if error_taxas %}
+                    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_taxas }}</div>
+                    {% endif %}
+                    <div class="table-responsive">
+                      <table class="table table-bordered table-striped">
+                        <thead>
+                          <tr>
+                            <th class="text-center" style="min-width:200px">{{ column_bandeira }}</th>
+                            <th class="text-center" style="min-width:200px">{{ column_ativa }}</th>
+                            <th class="text-center" style="min-width:200px">{{ column_parcelas }}</th>
+                            <th class="text-center" style="min-width:200px">{{ column_sem_juros }}</th>
+                            <th class="text-center" style="max-width:100px">{{ column_juros }}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% if bandeiras %}
+                          {% for bandeira in bandeiras %}
+                          <tr id="bandeira-{{ bandeira.nome }}">
+                            <td class="text-center">
+                              <strong>{{ bandeira.nome|capitalize }}</strong>
+                              <input type="hidden" name="bandeiras[{{ bandeira.nome }}][nome]" value="{{ bandeira.nome }}" />
+                            </td>
+                            <td class="text-center">
+                              <label class="switch">
+                                <input type="checkbox" name="bandeiras[{{ bandeira.nome }}][ativa]" {{ bandeira.ativa == 'on' ? 'checked' : '' }} />
+                                <span class="slider round"></span>
+                              </label>
+                            </td>
+                            <td class="text-center">
+                              <select name="bandeiras[{{ bandeira.nome }}][parcelas]" class="form-control">
+                                {% for parcela in parcelas_data %}
+                                <option value="{{ parcela }}" {{ parcela == bandeira.parcelas ? 'selected="selected"' }}>{{ "%02d"|format(parcela) }}</option>
+                                {% endfor %}
+                              </select>
+                            </td>
+                            <td class="text-center">
+                              <select name="bandeiras[{{ bandeira.nome }}][sem_juros]" class="form-control">
+                                {% for parcela in parcelas_data %}
+                                <option value="{{ parcela }}" {{ parcela == bandeira.sem_juros ? 'selected="selected"' }}>{{ "%02d"|format(parcela) }}</option>
+                                {% endfor %}
+                              </select>
+                            </td>
+                            <td class="text-center">
+                              {% for parcela, juros in bandeira.juros %}
+                              <p>{{ text_formato_parcelas|format(parcela, "%0.2f"|format(juros)) }}</p>
+                              <input type="hidden" name="bandeiras[{{ bandeira.nome }}][juros][{{ parcela }}]" value="{{ juros }}" />
+                              {% endfor %}
+                              <button type="button" class="btn btn-default" onclick="modalParcelas('{{ bandeira.nome }}')" {{ bandeira.parcelas <= bandeira.sem_juros ? 'disabled' }}>
+                                {{ button_configurar_taxas }}
+                              </button>
+                            </td>
+                          </tr>
+                          {% endfor %}
+                          {% endif %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="tab-pane" id="regras">
+                    <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ info_regras }}</div>
+                    <div class="table-responsive">
+                      <table class="table table-bordered table-striped">
+                        <thead>
+                          <tr>
+                            <td class="text-center" style="min-width:250px">{{ column_total }}</td>
+                            <td class="text-center" style="min-width:250px">{{ column_parcelas }}</td>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for regra in regras %}
+                          {%  if regra.parcela %}
+                          <tr>
+                            <td class="text-center">
+                              <strong>{{ "%02.2d"|format(regra.parcela) }}</strong>
+                              <input type="hidden" name="regras[{{ regra.parcela }}][parcela]" value="{{ regra.parcela }}" />
+                            </td>
+                            <td class="text-center">
+                              <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-money"></i></div>
+                                <input type="text" name="regras[{{ regra.parcela }}][total]" value="{{ regra.total }}" placeholder="" class="form-control" maxlength="7" />
+                              </div>
+                            </td>
+                          </tr>
+                          {% endif %}
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-situacoes">
+              <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ info_situacoes }}</div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_situacao_pendente }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_situacao_pendente }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <select name="situacao_pendente_id" class="form-control">
+                    {% for order_status in order_statuses_data %}
+                    <option value="{{ order_status.order_status_id }}" {{ order_status.order_status_id == situacao_pendente_id ? 'selected="selected"' }}>{{ order_status.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_situacao_autorizada }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_situacao_autorizada }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <select name="situacao_autorizada_id" class="form-control">
+                    {% for order_status in order_statuses_data %}
+                    <option value="{{ order_status.order_status_id }}" {{ order_status.order_status_id == situacao_autorizada_id ? 'selected="selected"' }}>{{ order_status.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_situacao_nao_autorizada }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_situacao_nao_autorizada }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <select name="situacao_nao_autorizada_id" class="form-control">
+                    {% for order_status in order_statuses_data %}
+                    <option value="{{ order_status.order_status_id }}" {{ order_status.order_status_id == situacao_nao_autorizada_id ? 'selected="selected"' }}>{{ order_status.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_situacao_capturada }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_situacao_capturada }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <select name="situacao_capturada_id" class="form-control">
+                    {% for order_status in order_statuses_data %}
+                    <option value="{{ order_status.order_status_id }}" {{ order_status.order_status_id == situacao_capturada_id ? 'selected="selected"' }}>{{ order_status.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_situacao_cancelada }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_situacao_cancelada }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <select name="situacao_cancelada_id" class="form-control">
+                    {% for order_status in order_statuses_data %}
+                    <option value="{{ order_status.order_status_id }}" {{ order_status.order_status_id == situacao_cancelada_id ? 'selected="selected"' }}>{{ order_status.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-campos">
+              <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ info_campos }}</div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_custom_razao_id }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_custom_razao_id }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <label>{{ text_campo }}</label>
+                  <select name="custom_razao_id" class="form-control">
+                    <option value="">{{ text_none }}</option>
+                    <option value="C" {{ custom_razao_id == 'C' ? 'selected="selected"' }}>{{ text_coluna }}</option>
+                    {% for custom_field in custom_fields_data %}
+                    {% if custom_field.location == 'account' and custom_field.type == 'text' %}
+                    <option value="{{ custom_field.custom_field_id }}" {{ custom_field.custom_field_id == custom_razao_id ? 'selected="selected"' }}>{{ custom_field.name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-sm-3" id="razao_coluna">
+                  <label>{{ text_razao }}</label>
+                  <select name="razao_coluna" class="form-control">
+                    <option value=""></option>
+                    {% for column in columns_data %}
+                    {% if column.Field == razao_coluna %}
+                    <option value="{{ column.Field }}" selected="selected">{{ column.Field }}</option>
+                    {% else %}
+                    <option value="{{ column.Field }}">{{ column.Field }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                  {% if error_razao %}
+                  <div class="text-danger">{{ error_razao }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_custom_cnpj_id }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_custom_cnpj_id }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <label>{{ text_campo }}</label>
+                  <select name="custom_cnpj_id" class="form-control">
+                    <option value="">{{ text_none }}</option>
+                    <option value="C" {{ custom_cnpj_id == 'C' ? 'selected="selected"' }}>{{ text_coluna }}</option>
+                    {% for custom_field in custom_fields_data %}
+                    {% if custom_field.location == 'account' and custom_field.type == 'text' %}
+                    <option value="{{ custom_field.custom_field_id }}" {{ custom_field.custom_field_id == custom_cnpj_id ? 'selected="selected"' }}>{{ custom_field.name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-sm-3" id="cnpj_coluna">
+                  <label>{{ text_cnpj }}</label>
+                  <select name="cnpj_coluna" class="form-control">
+                    <option value=""></option>
+                    {% for column in columns_data %}
+                    {% if column.Field == cnpj_coluna %}
+                    <option value="{{ column.Field }}" selected="selected">{{ column.Field }}</option>
+                    {% else %}
+                    <option value="{{ column.Field }}">{{ column.Field }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                  {% if error_cnpj %}
+                  <div class="text-danger">{{ error_cnpj }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_custom_cpf_id }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_custom_cpf_id }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <label>{{ text_campo }}</label>
+                  <select name="custom_cpf_id" class="form-control">
+                    <option value="">{{ text_none }}</option>
+                    <option value="C" {{ custom_cpf_id == 'C' ? 'selected="selected"' }}>{{ text_coluna }}</option>
+                    {% for custom_field in custom_fields_data %}
+                    {% if custom_field.location == 'account' and custom_field.type == 'text' %}
+                    <option value="{{ custom_field.custom_field_id }}" {{ custom_field.custom_field_id == custom_cpf_id ? 'selected="selected"' }}>{{ custom_field.name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                  {% if error_cpf_obrigatorio %}
+                  <div class="text-danger">{{ error_cpf_obrigatorio }}</div>
+                  {% endif %}
+                </div>
+                <div class="col-sm-3" id="cpf_coluna">
+                  <label>{{ text_cpf }}</label>
+                  <select name="cpf_coluna" class="form-control">
+                    <option value=""></option>
+                    {% for column in columns_data %}
+                    {% if column.Field == cpf_coluna %}
+                    <option value="{{ column.Field }}" selected="selected">{{ column.Field }}</option>
+                    {% else %}
+                    <option value="{{ column.Field }}">{{ column.Field }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                  {% if error_cpf %}
+                  <div class="text-danger">{{ error_cpf }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_custom_numero_id }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_custom_numero_id }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <label>{{ text_campo }}</label>
+                  <select name="custom_numero_id" class="form-control">
+                    <option value="">{{ text_none }}</option>
+                    <option value="C" {{ custom_numero_id == 'C' ? 'selected="selected"' }}>{{ text_coluna }}</option>
+                    {% for custom_field in custom_fields_data %}
+                    {% if custom_field.location == 'address' and custom_field.type == 'text' %}
+                    <option value="{{ custom_field.custom_field_id }}" {{ custom_field.custom_field_id == custom_numero_id ? 'selected="selected"' }}>{{ custom_field.name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                  {% if error_numero_obrigatorio %}
+                  <div class="text-danger">{{ error_numero_obrigatorio }}</div>
+                  {% endif %}
+                </div>
+                <div class="col-sm-3" id="numero_fatura_coluna">
+                  <label>{{ text_numero_fatura }}</label>
+                  <select name="numero_fatura_coluna" class="form-control">
+                    <option value=""></option>
+                    {% for column in columns_data %}
+                    {% if column.Field == numero_fatura_coluna %}
+                    <option value="{{ column.Field }}" selected="selected">{{ column.Field }}</option>
+                    {% else %}
+                    <option value="{{ column.Field }}">{{ column.Field }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                  {% if error_numero_fatura %}
+                  <div class="text-danger">{{ error_numero_fatura }}</div>
+                  {% endif %}
+                </div>
+                <div class="col-sm-3" id="numero_entrega_coluna">
+                  <label>{{ text_numero_entrega }}</label>
+                  <select name="numero_entrega_coluna" class="form-control">
+                    <option value=""></option>
+                    {% for column in columns_data %}
+                    {% if column.Field == numero_entrega_coluna %}
+                    <option value="{{ column.Field }}" selected="selected">{{ column.Field }}</option>
+                    {% else %}
+                    <option value="{{ column.Field }}">{{ column.Field }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                  {% if error_numero_entrega %}
+                  <div class="text-danger">{{ error_numero_entrega }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_custom_complemento_id }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_custom_complemento_id }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <label>{{ text_campo }}</label>
+                  <select name="custom_complemento_id" class="form-control">
+                    <option value="">{{ text_none }}</option>
+                    <option value="C" {{ custom_complemento_id == 'C' ? 'selected="selected"' }}>{{ text_coluna }}</option>
+                    {% for custom_field in custom_fields_data %}
+                    {% if custom_field.location == 'address' and custom_field.type == 'text' %}
+                    <option value="{{ custom_field.custom_field_id }}" {{ custom_field.custom_field_id == custom_complemento_id ? 'selected="selected"' }}>{{ custom_field.name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-sm-3" id="complemento_fatura_coluna">
+                  <label>{{ text_complemento_fatura }}</label>
+                  <select name="complemento_fatura_coluna" class="form-control">
+                    <option value=""></option>
+                    {% for column in columns_data %}
+                    {% if column.Field == complemento_fatura_coluna %}
+                    <option value="{{ column.Field }}" selected="selected">{{ column.Field }}</option>
+                    {% else %}
+                    <option value="{{ column.Field }}">{{ column.Field }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                  {% if error_complemento_fatura %}
+                  <div class="text-danger">{{ error_complemento_fatura }}</div>
+                  {% endif %}
+                </div>
+                <div class="col-sm-3" id="complemento_entrega_coluna">
+                  <label>{{ text_complemento_entrega }}</label>
+                  <select name="complemento_entrega_coluna" class="form-control">
+                    <option value=""></option>
+                    {% for column in columns_data %}
+                    {% if column.Field == complemento_entrega_coluna %}
+                    <option value="{{ column.Field }}" selected="selected">{{ column.Field }}</option>
+                    {% else %}
+                    <option value="{{ column.Field }}">{{ column.Field }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                  {% if error_complemento_entrega %}
+                  <div class="text-danger">{{ error_complemento_entrega }}</div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-finalizacao">
+              <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ info_finalizacao }}</div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_titulo }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_titulo }}</span>
+                </div>
+                <div class="col-sm-4">
+                  <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-pencil-square-o"></i></span>
+                    <input type="text" name="titulo" value="{{ titulo }}" placeholder="" class="form-control" maxlength="50" />
+                  </div>
+                  {% if error_titulo %}
+                  <div class="text-danger">{{ error_titulo }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_imagem }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_imagem }}</span>
+                </div>
+                <div class="col-sm-9">
+                  <a href="" id="thumb-image" data-toggle="image" class="img-thumbnail">
+                    <img src="{{ thumb }}" alt="" title="" data-placeholder="{{ no_image }}" />
+                  </a>
+                  <input type="hidden" name="imagem" value="{{ imagem }}" id="input-image" />
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_instrucoes }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_instrucoes }}</span>
+                </div>
+                <div class="col-sm-4">
+                  <select name="information_id" class="form-control">
+                    <option value="0">{{ text_none }}</option>
+                    {% for information in informations_data %}
+                    <option value="{{ information.information_id }}" {{ information.information_id == information_id ? 'selected="selected"' }}>{{ information.title }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_exibir_juros }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_exibir_juros }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <select name="exibir_juros" class="form-control">
+                    <option value="1" {{ exibir_juros == '1' ? 'selected="selected"' }}>{{ text_yes }}</option>
+                    <option value="0" {{ exibir_juros == '0' ? 'selected="selected"' }}>{{ text_no }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_tema }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_tema }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <select name="tema" class="form-control">
+                    {% for chave, valor in themes_data %}
+                    <option value="{{ chave }}" {{ tema == chave ? 'selected="selected"' }}>{{ valor }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div id="bootstrap_v3" class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_estilo_botao }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_estilo_botao }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <select name="estilo_botao_b3" class="form-control">
+                    {% for chave, valor in styles_b3_data %}
+                    <option value="{{ chave }}" {{ estilo_botao_b3 == chave ? 'selected="selected"' }}>{{ valor }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div id="skeleton">
+                <div class="form-group">
+                  <div class="col-sm-3">
+                    <h5><strong>{{ entry_botao_normal }}</strong></h5>
+                    <span class="help"><i class="fa fa-info-circle"></i> {{ help_botao_normal }}</span>
+                  </div>
+                  <div class="col-sm-2">
+                    <label>{{ text_texto }}</label>
+                    <div class="input-group">
+                      <span class="input-group-addon"><i class="fa fa-tint"></i></span>
+                      <input type="color" name="cor_normal_texto" value="{{ cor_normal_texto }}" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="col-sm-2">
+                    <label>{{ text_fundo }}</label>
+                    <div class="input-group">
+                      <span class="input-group-addon"><i class="fa fa-tint"></i></span>
+                      <input type="color" name="cor_normal_fundo" value="{{ cor_normal_fundo }}" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="col-sm-2">
+                    <label>{{ text_borda }}</label>
+                    <div class="input-group">
+                      <span class="input-group-addon"><i class="fa fa-tint"></i></span>
+                      <input type="color" name="cor_normal_borda" value="{{ cor_normal_borda }}" class="form-control" />
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-3">
+                    <h5><strong>{{ entry_botao_efeito }}</strong></h5>
+                    <span class="help"><i class="fa fa-info-circle"></i> {{ help_botao_efeito }}</span>
+                  </div>
+                  <div class="col-sm-2">
+                    <label>{{ text_texto }}</label>
+                    <div class="input-group">
+                      <span class="input-group-addon"><i class="fa fa-tint"></i></span>
+                      <input type="color" name="cor_efeito_texto" value="{{ cor_efeito_texto }}" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="col-sm-2">
+                    <label>{{ text_fundo }}</label>
+                    <div class="input-group">
+                      <span class="input-group-addon"><i class="fa fa-tint"></i></span>
+                      <input type="color" name="cor_efeito_fundo" value="{{ cor_efeito_fundo }}" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="col-sm-2">
+                    <label>{{ text_borda }}</label>
+                    <div class="input-group">
+                      <span class="input-group-addon"><i class="fa fa-tint"></i></span>
+                      <input type="color" name="cor_efeito_borda" value="{{ cor_efeito_borda }}" class="form-control" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_texto_botao }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_texto_botao }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-check"></i></span>
+                    <input type="text" name="texto_botao" value="{{ texto_botao }}" placeholder="" class="form-control" maxlength="50" />
+                  </div>
+                  {% if error_texto_botao %}
+                  <div class="text-danger">{{ error_texto_botao }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_container_botao }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_container_botao }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-thumb-tack"></i></span>
+                    <input type="text" name="container_botao" value="{{ container_botao }}" placeholder="" class="form-control" maxlength="50" />
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_codigo_css }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_codigo_css }}</span>
+                </div>
+                <div class="col-sm-9">
+                  <textarea name="codigo_css" rows="8" class="form-control">{{ codigo_css }}</textarea>
+                  {% if error_codigo_css %}
+                  <div class="text-danger">{{ error_codigo_css }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <fieldset>
+                <legend>{{ text_recaptcha }}</legend>
+                <span>{{ text_recaptcha_registrar }}</span>
+                <div class="form-group">
+                  <div class="col-sm-3">
+                    <h5><strong>{{ entry_recaptcha_site_key }}</strong></h5>
+                    <span class="help"><i class="fa fa-info-circle"></i> {{ help_recaptcha_site_key }}</span>
+                  </div>
+                  <div class="col-sm-5">
+                    <div class="input-group">
+                      <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                      <input type="text" name="recaptcha_site_key" value="{{ recaptcha_site_key }}" placeholder="" class="form-control" maxlength="200" />
+                    </div>
+                    {% if error_recaptcha_site_key %}
+                    <div class="text-danger">{{ error_recaptcha_site_key }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-3">
+                    <h5><strong>{{ entry_recaptcha_secret_key }}</strong></h5>
+                    <span class="help"><i class="fa fa-info-circle"></i> {{ help_recaptcha_secret_key }}</span>
+                  </div>
+                  <div class="col-sm-5">
+                    <div class="input-group">
+                      <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                      <input type="text" name="recaptcha_secret_key" value="{{ recaptcha_secret_key }}" placeholder="" class="form-control" maxlength="200" />
+                    </div>
+                    {% if error_recaptcha_secret_key %}
+                    <div class="text-danger">{{ error_recaptcha_secret_key }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-3">
+                    <h5><strong>{{ entry_recaptcha_status }}</strong></h5>
+                    <span class="help"><i class="fa fa-info-circle"></i> {{ help_recaptcha_status }}</span>
+                  </div>
+                  <div class="col-sm-3">
+                    <select name="recaptcha_status" class="form-control">
+                      <option value="1" {{ recaptcha_status == '1' ? 'selected="selected"' }}>{{ text_enabled }}</option>
+                      <option value="0" {{ recaptcha_status == '0' ? 'selected="selected"' }}>{{ text_disabled }}</option>
+                    </select>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+            <div class="tab-pane" id="tab-clearsale">
+              <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ info_clearsale }}</div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_clearsale_codigo }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_clearsale_codigo }}</span>
+                </div>
+                <div class="col-sm-4">
+                  <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                    <input type="text" name="clearsale_codigo" value="{{ clearsale_codigo }}" placeholder="" class="form-control" maxlength="50" />
+                  </div>
+                  {% if error_clearsale_codigo %}
+                  <div class="text-danger">{{ error_clearsale_codigo }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_clearsale_ambiente }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_clearsale_ambiente }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <select name="clearsale_ambiente" class="form-control">
+                    <option value="">{{ text_select }}</option>
+                    <option value="1" {{ clearsale_ambiente == '1' ? 'selected="selected"' }}>{{ text_producao }}</option>
+                    <option value="0" {{ clearsale_ambiente == '0' ? 'selected="selected"' }}>{{ text_homologacao }}</option>
+                  </select>
+                  {% if error_clearsale_ambiente %}
+                  <div class="text-danger">{{ error_clearsale_ambiente }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_status }}</strong></h5>
+                </div>
+                <div class="col-sm-2">
+                  <select name="clearsale_status" class="form-control">
+                    <option value="1" {{ clearsale_status == '1' ? 'selected="selected"' }}>{{ text_enabled }}</option>
+                    <option value="0" {{ clearsale_status == '0' ? 'selected="selected"' }}>{{ text_disabled }}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" tabindex="-1" role="dialog" id="parcelas-modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">{{ text_configurar_taxas }}</h4>
+        </div>
+        <div class="modal-body">
+          <form action="#" class="form"></form>
+        </div>
+        <div class="modal-footer">
+          <div class="pull-left">
+            <div class="btn-group">
+              <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                {{ button_copiar_taxas }}
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu"></ul>
+            </div>
+          </div>
+          <button type="button" class="btn btn-default" data-dismiss="modal">{{ button_cancel }}</button>
+          <button type="button" class="btn btn-primary" id="modal-salvar-parcelas">{{ button_save }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    function formatar_moeda(valor) {
+      let value = valor.val().replace(/[\D]+/g, '');
+      if (value.length < 3) { value = ('000' + value).slice(-3); }
+      value = value.replace(/([0-9]{2})$/g, ".$1");
+      valor.val(Number(value).toFixed(2));
+    }
+
+    $('input[name=total][type=text], input[name=minimo][type=text], input[name=desconto][type=text]').on('keyup change', function() {
+      formatar_moeda($(this));
+    });
+
+    $('input[name=dias_capturar][type=text], input[name=dias_cancelar_autorizacao][type=text], input[name=dias_cancelar_captura][type=text]').on('keyup change', function() {
+      const value = $(this).val().replace(/[^0-9]/g,'');
+      $(this).val(value);
+    });
+
+    $('input[name=soft_descriptor][type=text]').on('keyup change', function() {
+      const value = $(this).val().toUpperCase().replace(/[^A-Z0-9]/g,'');
+      $(this).val(value);
+    });
+
+    $('#regras').on('keyup change', function() {
+      $('input[name^=regras][type=text]').each(function() {
+        formatar_moeda($(this));
+      });
+    });
+
+    $('input[name^=regras][type=text]').each(function() {
+      $(this).on('input', function() {
+        $('#regras table tr:gt(' + $(this).closest('tr').index() + ') input[name^=regras][type=text]').val(this.value);
+      })
+    });
+
+    $('#parcelas-modal form').on('keyup change', function() {
+      $('#parcelas-modal form input[type=text]').each(function() {
+        formatar_moeda($(this));
+      });
+    });
+
+    const parcelasPorBandeira = {{ bandeiras|json_encode }};
+    let parcelaBandeira = '';
+
+    function modalParcelas(bandeira) {
+      parcelaBandeira = bandeira;
+
+      const fim = $(`select[name="bandeiras[${bandeira}][parcelas]"]`).val();
+      const inicio = parseInt($(`select[name="bandeiras[${bandeira}][sem_juros]"]`).val());
+
+      $('#parcelas-modal form div.form-group').remove();
+      $('#parcelas-modal .modal-footer .dropdown-menu').empty();
+
+      for (let i = inicio + 1; i <= fim; i++) {
+        $(`
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon">${i}x</div>
+            <input type="text" name="" value="${new Number(parcelasPorBandeira[bandeira]?.juros?.[i] ?? '').toFixed(2)}" data-field-idx="${i}" class="form-control" maxlength="5" required />
+            <div class="input-group-addon">%</div>
+          </div>
+        </div>
+      `).appendTo('#parcelas-modal form');
+      }
+
+      for (let bandeira in parcelasPorBandeira) {
+        if (parcelasPorBandeira[bandeira].juros) {
+          $(`
+          <li class="dropdown-submenu">
+            <button type="button" class="btn btn-default">${bandeira}</button>
+          </li>
+          `).appendTo('#parcelas-modal .modal-footer .dropdown-menu');
+        }
+      }
+
+      $('#parcelas-modal').modal('show');
+    }
+
+    $('#modal-salvar-parcelas').click(function(e) {
+      if (parcelasComErro()) {
+        return;
+      }
+
+      const inputs = document.querySelectorAll('#parcelas-modal form input');
+
+      $(`#bandeira-${parcelaBandeira} td:last-child input[type="hidden"]`).remove();
+      $(`#bandeira-${parcelaBandeira} td:last-child p`).remove();
+
+      parcelasPorBandeira[parcelaBandeira].juros = {};
+
+      $(inputs).each(function() {
+        const value = parseFloat($(this).val());
+        const index = $(this).data('field-idx');
+
+        if (value > 0 && value <= 100) {
+          $(`<input type="hidden" name="bandeiras[${parcelaBandeira}][juros][${index}]" value="${value}" />`).appendTo(`#bandeira-${parcelaBandeira} td:last-child`);
+
+          let formatado = "{{ text_formato_parcelas }}";
+          formatado = formatado.replace('%s%', value.toFixed(2)).replace('%s', index);
+
+          $(`<p>${formatado}</p>`).insertBefore(`#bandeira-${parcelaBandeira} td:last-child button`);
+
+          parcelasPorBandeira[parcelaBandeira].juros[index] = value;
+        }
+      });
+
+      $('#parcelas-modal').modal('hide');
+    })
+
+    $('#parcelas-modal form').on('keyupchange', 'input', function() {
+      parcelasComErro($(this));
+    })
+
+    $('#parcelas-modal .modal-footer .dropdown-menu').on('click', 'button', function() {
+      const bandeira = $(this).text().toLowerCase();
+
+      $('#parcelas-modal form input').val('');
+
+      for (let parcela in parcelasPorBandeira[bandeira].juros) {
+        const parcelaValor = parcelasPorBandeira[bandeira].juros[parcela];
+
+        $(`#parcelas-modal form input[data-field-idx="${parcela}"]`).val(new Number(parcelaValor).toFixed(2));
+      }
+    })
+
+    function parcelasComErro(...inputs) {
+      let hasError = false;
+
+      $('#parcelas-modal form input').closest('.form-group').find('.text-danger').remove();
+
+      if (inputs.length < 1) {
+        inputs = document.querySelectorAll('#parcelas-modal form input');
+      }
+
+      $(inputs).each(function() {
+        const value = parseFloat($(this).val() || 0);
+
+        if (value <= 0 || value > 100) {
+          $(this).closest('.form-group').append('<span class="text-danger">{{ error_taxa }}</span>');
+          hasError = true;
+        }
+      })
+
+      return hasError;
+    }
+
+    $('select[name$="[parcelas]"]').change(function() {
+      const totalParcelas = $(this).val();
+      const totalSemJuros = $(this).closest('tr').find('select[name$="[sem_juros]"]');
+
+      $(this).closest('tr').find('select[name$="[sem_juros]"] option').each(function() {
+        $(this).prop('disabled', parseInt($(this).val()) > totalParcelas);
+      })
+
+      if ($(totalSemJuros).val() == null) {
+        $(totalSemJuros).val(totalParcelas);
+      }
+    })
+
+    $('select[name$="[sem_juros]"], select[name$="[parcelas]"]').change(function() {
+      const totalSemJuros = parseInt($(this).closest('tr').find('select[name$="[sem_juros]"]').val());
+      const totalParcelas = parseInt($(this).closest('tr').find('select[name$="[parcelas]"]').val());
+
+      $(this).closest('tr').find('td:last-child button').prop('disabled', totalSemJuros >= totalParcelas);
+
+      if (totalSemJuros >= totalParcelas) {
+        $(this).closest('tr').find('td:last-child p, td:last-child input').remove();
+      }
+    })
+
+    $('select[name$="[sem_juros]"], select[name$="[parcelas]"]').trigger('change');
+
+    $('#razao_coluna').hide();
+    $('#cnpj_coluna').hide();
+    $('#cpf_coluna').hide();
+    $('#numero_fatura_coluna').hide();
+    $('#numero_entrega_coluna').hide();
+    $('#complemento_fatura_coluna').hide();
+    $('#complemento_entrega_coluna').hide();
+    $('#bootstrap_v3').hide();
+    $('#skeleton').hide();
+
+    $('select[name="custom_razao_id"]').change(function() {
+      if ($(this).val() == 'C') { $('#razao_coluna').show(); } else { $('#razao_coluna').hide(); }
+    });
+
+    $('select[name="custom_cnpj_id"]').change(function() {
+      if ($(this).val() == 'C') { $('#cnpj_coluna').show(); } else { $('#cnpj_coluna').hide(); }
+    });
+
+    $('select[name="custom_cpf_id"]').change(function() {
+      if ($(this).val() == 'C') { $('#cpf_coluna').show(); } else { $('#cpf_coluna').hide(); }
+    });
+
+    $('select[name="custom_numero_id"]').change(function() {
+      if ($(this).val() == 'C') { $('#numero_fatura_coluna').show(); } else { $('#numero_fatura_coluna').hide(); }
+      if ($(this).val() == 'C') { $('#numero_entrega_coluna').show(); } else { $('#numero_entrega_coluna').hide(); }
+    });
+
+    $('select[name="custom_complemento_id"]').change(function() {
+      if ($(this).val() == 'C') { $('#complemento_fatura_coluna').show(); } else { $('#complemento_fatura_coluna').hide(); }
+      if ($(this).val() == 'C') { $('#complemento_entrega_coluna').show(); } else { $('#complemento_entrega_coluna').hide(); }
+    });
+
+    $('select[name="tema"]').change(function() {
+      if ($(this).val() == 'bootstrap_v3') { $('#bootstrap_v3').show(); } else { $('#bootstrap_v3').hide(); }
+      if ($(this).val() == 'skeleton') { $('#skeleton').show(); } else { $('#skeleton').hide(); }
+    });
+
+    $('select[name="custom_razao_id"]').trigger('change');
+    $('select[name="custom_cnpj_id"]').trigger('change');
+    $('select[name="custom_cpf_id"]').trigger('change');
+    $('select[name="custom_numero_id"]').trigger('change');
+    $('select[name="custom_complemento_id"]').trigger('change');
+    $('select[name="tema"]').trigger('change');
+  </script>
+  <style>
+    .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #607D8B; -webkit-transition: .4s; transition: .4s; }
+    .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; -webkit-transition: .4s; transition: .4s; }
+    input:checked + .slider { background-color: #4CAF50; }
+    input:focus + .slider { box-shadow: 0 0 1px #4CAF50; }
+    input:checked + .slider:before { -webkit-transform: translateX(26px); -ms-transform: translateX(26px); transform: translateX(26px); }
+    .slider.round { border-radius: 34px; }
+    .slider.round:before { border-radius: 50%; }
+    tr[id^=bandeira-] td:last-child p {margin: 0;}
+    tr[id^=bandeira-] td:last-child p ~ button {margin-top: 9px;}
+    div#parcelas-modal form div.form-group {padding: 5px 0px;}
+    div#parcelas-modal ul.dropdown-menu { width: 360px; }
+    #parcelas-modal .dropdown-submenu { float: left; width: 33%; }
+    #parcelas-modal .dropdown-submenu button { border: none; text-align: left; text-transform: capitalize; width: 100%; }
+  </style>
+</div>
+{{ footer }}

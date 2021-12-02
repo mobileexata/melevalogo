@@ -1,0 +1,892 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-shipping" input type="hidden" id="save_stay" name="save_stay" value="1" data-toggle="tooltip" title="{{ button_save_stay }}" class="btn btn-success"><i class="fa fa-save"></i></button>
+        <button type="submit" form="form-shipping" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+      </div>
+      <h1>{{ heading_title }}</h1> <span class="badge">{{ versao }}</span>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    {% if success %}
+    <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-shipping" class="form-horizontal">
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab-geral" data-toggle="tab">{{ tab_geral }}</a></li>
+            <li><a href="#tab-api" data-toggle="tab">{{ tab_api }}</a></li>
+            <li><a href="#tab-servicos" data-toggle="tab">{{ tab_servicos }}</a></li>
+            <li><a href="#tab-promocoes" data-toggle="tab">{{ tab_promocoes }}</a></li>
+            <li><a href="#tab-restricoes" data-toggle="tab">{{ tab_restricoes }}</a></li>
+            <li><a href="#tab-bloqueios" data-toggle="tab">{{ tab_bloqueios }}</a></li>
+            <li><a href="#tab-finalizacao" data-toggle="tab">{{ tab_finalizacao }}</a></li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="tab-geral">
+              <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ text_info_geral }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_chave }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_chave }}</span>
+                </div>
+                <div class="col-sm-6">
+                  {% set id = 0 %}
+                  <h5><strong>{{ store_default }}</strong></h5>
+                  <input type="text" name="shipping_correios_chave[{{ id }}]" value="{{ shipping_correios_chave[id] }}" placeholder="" class="form-control" />
+                  <br>
+                  {% for store in stores %}
+                  {% set id = store.store_id %}
+                  <h5><strong>{{ store.name }}</strong></h5>
+                  {% if store.store_id in shipping_correios_chave|keys %}
+                  <input type="text" name="shipping_correios_chave[{{ id }}]" value="{{ shipping_correios_chave[id] }}" placeholder="" class="form-control" />
+                  {% else %}
+                  <input type="text" name="shipping_correios_chave[{{ id }}]" value="" placeholder="" class="form-control" />
+                  {% endif %}
+                  {% endfor %}
+                  {% if error_chave %}
+                  <div class="text-danger">{{ error_chave }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_lojas }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_lojas }}</span>
+                </div>
+                <div class="col-sm-6">
+                  <div class="well well-sm" style="height: 150px; overflow: auto;">
+                    <div class="checkbox">
+                      <label>
+                        {% if '0' in shipping_correios_stores %}
+                        <input type="checkbox" name="shipping_correios_stores[]" value="0" checked="checked" />
+                        {{ store_default }}
+                        {% else %}
+                        <input type="checkbox" name="shipping_correios_stores[]" value="0" />
+                        {{ store_default }}
+                        {% endif %}
+                      </label>
+                    </div>
+                    {% for store in stores %}
+                    <div class="checkbox">
+                      <label>
+                        {% if store.store_id in shipping_correios_stores %}
+                        <input type="checkbox" name="shipping_correios_stores[]" value="{{ store.store_id }}" checked="checked" />
+                        {{ store.name }}
+                        {% else %}
+                        <input type="checkbox" name="shipping_correios_stores[]" value="{{ store.store_id }}" />
+                        {{ store.name }}
+                        {% endif %}
+                      </label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  <a onclick="$(this).parent().find(':checkbox').prop('checked', true);">{{ text_select_all }}</a> / <a onclick="$(this).parent().find(':checkbox').prop('checked', false);">{{ text_unselect_all }}</a>
+                  {% if error_stores %}
+                  <div class="text-danger">{{ error_stores }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_tipos_clientes }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_tipos_clientes }}</span>
+                </div>
+                <div class="col-sm-6">
+                  <div class="well well-sm" style="height: 150px; overflow: auto;">
+                    {% for customer_group in customer_groups %}
+                    <div class="checkbox">
+                      <label>
+                        {% if customer_group.customer_group_id in shipping_correios_customer_groups %}
+                        <input type="checkbox" name="shipping_correios_customer_groups[]" value="{{ customer_group.customer_group_id }}" checked="checked" />
+                        {{ customer_group.name }}
+                        {% else %}
+                        <input type="checkbox" name="shipping_correios_customer_groups[]" value="{{ customer_group.customer_group_id }}" />
+                        {{ customer_group.name }}
+                        {% endif %}
+                      </label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  <a onclick="$(this).parent().find(':checkbox').prop('checked', true);">{{ text_select_all }}</a> / <a onclick="$(this).parent().find(':checkbox').prop('checked', false);">{{ text_unselect_all }}</a>
+                  {% if error_customer_groups %}
+                  <div class="text-danger">{{ error_customer_groups }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_total }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_total }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <input type="text" name="shipping_correios_total" value="{{ shipping_correios_total }}" placeholder="" class="form-control" />
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_peso_minimo }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_peso_min }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <input type="text" name="shipping_correios_peso_minimo" value="{{ shipping_correios_peso_minimo }}" placeholder="" class="form-control" />
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_peso_maximo }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_peso_max }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <input type="text" name="shipping_correios_peso_maximo" value="{{ shipping_correios_peso_maximo }}" placeholder="" class="form-control" />
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_weight_class }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_weight_class }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <select name="shipping_correios_weight_class_id" class="form-control">
+                    <option value="">{{ text_select }}</option>
+                    {% for weight_class in weight_classes %}
+                    {% if weight_class.weight_class_id == shipping_correios_weight_class_id %}
+                    <option value="{{ weight_class.weight_class_id }}" selected="selected">{{ weight_class.title }}</option>
+                    {% else %}
+                    <option value="{{ weight_class.weight_class_id }}">{{ weight_class.title }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                  {% if error_weight_class_id %}
+                  <div class="text-danger">{{ error_weight_class_id }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_length_class }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_length_class }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <select name="shipping_correios_length_class_id" class="form-control">
+                    <option value="">{{ text_select }}</option>
+                    {% for length_class in length_classes %}
+                    {% if length_class.length_class_id == shipping_correios_length_class_id %}
+                    <option value="{{ length_class.length_class_id }}" selected="selected">{{ length_class.title }}</option>
+                    {% else %}
+                    <option value="{{ length_class.length_class_id }}">{{ length_class.title }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                  {% if error_length_class_id %}
+                  <div class="text-danger">{{ error_length_class_id }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_tax_class }}</strong></h5>
+                </div>
+                <div class="col-sm-3">
+                  <select name="shipping_correios_tax_class_id" class="form-control">
+                    <option value="0">{{ text_none }}</option>
+                    {% for tax_class in tax_classes %}
+                    {% if tax_class.tax_class_id == shipping_correios_tax_class_id %}
+                    <option value="{{ tax_class.tax_class_id }}" selected="selected">{{ tax_class.title }}</option>
+                    {% else %}
+                    <option value="{{ tax_class.tax_class_id }}">{{ tax_class.title }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_geo_zone }}</strong></h5>
+                </div>
+                <div class="col-sm-3">
+                  <select name="shipping_correios_geo_zone_id" class="form-control">
+                    <option value="0">{{ text_all_zones }}</option>
+                    {% for geo_zone in geo_zones %}
+                    {% if geo_zone.geo_zone_id == shipping_correios_geo_zone_id %}
+                    <option value="{{ geo_zone.geo_zone_id }}" selected="selected">{{ geo_zone.name }}</option>
+                    {% else %}
+                    <option value="{{ geo_zone.geo_zone_id }}">{{ geo_zone.name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_status }}</strong></h5>
+                </div>
+                <div class="col-sm-2">
+                  <select name="shipping_correios_status" class="form-control">
+                    {% if shipping_correios_status %}
+                    <option value="1" selected="selected">{{ text_enabled }}</option>
+                    <option value="0">{{ text_disabled }}</option>
+                    {% else %}
+                    <option value="1">{{ text_enabled }}</option>
+                    <option value="0" selected="selected">{{ text_disabled }}</option>
+                    {% endif %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_sort_order }}</strong></h5>
+                </div>
+                <div class="col-sm-2">
+                  <input type="text" name="shipping_correios_sort_order" value="{{ shipping_correios_sort_order }}" placeholder="" class="form-control" />
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-api">
+              <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ text_info_api }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_codigo_administrativo }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_codigo_administrativo }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <input type="text" name="shipping_correios_codigo_administrativo" value="{{ shipping_correios_codigo_administrativo }}" placeholder="" class="form-control" />
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_senha_acesso }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_senha_acesso }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <input type="text" name="shipping_correios_senha_acesso" value="{{ shipping_correios_senha_acesso }}" placeholder="" class="form-control" />
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_cep_origem }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_cep_origem }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <input type="text" name="shipping_correios_cep_origem" value="{{ shipping_correios_cep_origem }}" placeholder="" class="form-control" />
+                  {% if error_cep_origem %}
+                  <div class="text-danger">{{ error_cep_origem }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_prazo_adicional }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_prazo_adicional }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <input type="text" name="shipping_correios_prazo_adicional" value="{{ shipping_correios_prazo_adicional }}" placeholder="" class="form-control" />
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_formato }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_formato }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <select name="shipping_correios_formato" class="form-control">
+                    {% for chave, valor in formatos %}
+                    {% if shipping_correios_formato == chave %}
+                    <option value="{{ chave }}" selected="selected">{{ valor }}</option>
+                    {% else %}
+                    <option value="{{ chave }}">{{ valor }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_limite_manuseio }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_limite_manuseio }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <input type="text" name="shipping_correios_limite_manuseio" value="{{ shipping_correios_limite_manuseio }}" placeholder="" class="form-control" />
+                  {% if error_limite_manuseio %}
+                  <div class="text-danger">{{ error_limite_manuseio }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_taxa_manuseio }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_taxa_manuseio }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <input type="text" name="shipping_correios_taxa_manuseio" value="{{ shipping_correios_taxa_manuseio }}" placeholder="" class="form-control" />
+                  {% if error_taxa_manuseio %}
+                  <div class="text-danger">{{ error_taxa_manuseio }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_tipo_custo }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_tipo_custo }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <select name="shipping_correios_tipo_custo" class="form-control">
+                    {% if shipping_correios_tipo_custo == 'P' %}
+                    <option value="P" selected="selected">{{ text_percentual }}</option>
+                    <option value="F">{{ text_fixo }}</option>
+                    {% else %}
+                    <option value="P">{{ text_percentual }}</option>
+                    <option value="F" selected="selected">{{ text_fixo }}</option>
+                    {% endif %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_custo_adicional }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_custo_adicional }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <input type="text" name="shipping_correios_custo_adicional" value="{{ shipping_correios_custo_adicional }}" placeholder="" class="form-control" />
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_debug }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_debug }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <select name="shipping_correios_debug" id="input-debug" class="form-control">
+                    {% if shipping_correios_debug %}
+                    <option value="1" selected="selected">{{ text_enabled }}</option>
+                    <option value="0">{{ text_disabled }}</option>
+                    {% else %}
+                    <option value="1">{{ text_enabled }}</option>
+                    <option value="0" selected="selected">{{ text_disabled }}</option>
+                    {% endif %}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-servicos">
+              <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ text_info_servicos }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+              </div>
+              {% if error_servicos %}
+              <div class="text-danger">{{ error_servicos }}</div>
+              {% endif %}
+              <div class="table-responsive">
+                <table id="servicos" class="table table-striped table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <td class="text-left" style="min-width:160px"><span data-toggle="tooltip" title="{{ help_codigo_servico }}"><span class="text-danger">*</span> {{ entry_codigo_servico }}</span></td>
+                      <td class="text-left" style="min-width:210px"><span data-toggle="tooltip" title="{{ help_descricao_frete }}"><span class="text-danger">*</span> {{ entry_descricao_frete }}</span></td>
+                      <td class="text-left" style="min-width:130px"><span data-toggle="tooltip" title="{{ help_desativar_cotacoes }}">{{ entry_desativar_cotacoes }}</span></td>
+                      <td class="text-left" style="min-width:130px"><span data-toggle="tooltip" title="{{ help_mao_propria }}">{{ entry_mao_propria }}</span></td>
+                      <td class="text-left" style="min-width:130px"><span data-toggle="tooltip" title="{{ help_aviso_recebimento }}">{{ entry_aviso_recebimento }}</span></td>
+                      <td class="text-left" style="min-width:130px"><span data-toggle="tooltip" title="{{ help_valor_declarado }}">{{ entry_valor_declarado }}</span></td>
+                      <td class="text-left" style="min-width:130px"><span data-toggle="tooltip" title="{{ help_minimo_declarado }}"><span class="text-danger">*</span> {{ entry_minimo_declarado }}</span></td>
+                      <td class="text-left" style="min-width:130px"><span data-toggle="tooltip" title="{{ help_maximo_declarado }}"><span class="text-danger">*</span> {{ entry_maximo_declarado }}</span></td>
+                      <td class="text-left" style="min-width:130px"><span data-toggle="tooltip" title="{{ help_comprimento_minimo }}"><span class="text-danger">*</span> {{ entry_comprimento_minimo }}</span></td>
+                      <td class="text-left" style="min-width:130px"><span data-toggle="tooltip" title="{{ help_comprimento_maximo }}"><span class="text-danger">*</span> {{ entry_comprimento_maximo }}</span></td>
+                      <td class="text-left" style="min-width:130px"><span data-toggle="tooltip" title="{{ help_largura_minima }}"><span class="text-danger">*</span> {{ entry_largura_minima }}</span></td>
+                      <td class="text-left" style="min-width:130px"><span data-toggle="tooltip" title="{{ help_largura_maxima }}"><span class="text-danger">*</span> {{ entry_largura_maxima }}</span></td>
+                      <td class="text-left" style="min-width:130px"><span data-toggle="tooltip" title="{{ help_altura_minima }}"><span class="text-danger">*</span> {{ entry_altura_minima }}</span></td>
+                      <td class="text-left" style="min-width:130px"><span data-toggle="tooltip" title="{{ help_altura_maxima }}"><span class="text-danger">*</span> {{ entry_altura_maxima }}</span></td>
+                      <td class="text-left" style="min-width:130px"><span data-toggle="tooltip" title="{{ help_peso_minimo }}"><span class="text-danger">*</span> {{ entry_peso_minimo }}</span></td>
+                      <td class="text-left" style="min-width:130px"><span data-toggle="tooltip" title="{{ help_peso_maximo }}"><span class="text-danger">*</span> {{ entry_peso_maximo }}</span></td>
+                      <td class="text-left" style="min-width:130px"><span data-toggle="tooltip" title="{{ help_soma_maxima }}"><span class="text-danger">*</span> {{ entry_soma_maxima }}</span></td>
+                      <td></td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% set servicos_row = 0 %}
+                    {% if shipping_correios_servicos %}
+                    {% for servico in shipping_correios_servicos %}
+                    <tr id="servico-row{{ servicos_row }}">
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_servicos[{{ servicos_row }}][codigo]" value="{{ servico.codigo }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_servicos[{{ servicos_row }}][descricao]" value="{{ servico.descricao }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <select name="shipping_correios_servicos[{{ servicos_row }}][desativar_cotacoes]" class="form-control">
+                          {% if servico.desativar_cotacoes == 's' %}
+                          <option value="s" selected="selected">{{ text_yes }}</option>
+                          <option value="n">{{ text_no }}</option>
+                          {% else %}
+                          <option value="s">{{ text_yes }}</option>
+                          <option value="n" selected="selected">{{ text_no }}</option>
+                          {% endif %}
+                        </select>
+                      </td>
+                      <td class="text-left">
+                        <select name="shipping_correios_servicos[{{ servicos_row }}][mao_propria]" class="form-control">
+                          {% if servico.mao_propria == 's' %}
+                          <option value="s" selected="selected">{{ text_yes }}</option>
+                          <option value="n">{{ text_no }}</option>
+                          {% else %}
+                          <option value="s">{{ text_yes }}</option>
+                          <option value="n" selected="selected">{{ text_no }}</option>
+                          {% endif %}
+                        </select>
+                      </td>
+                      <td class="text-left">
+                        <select name="shipping_correios_servicos[{{ servicos_row }}][aviso_recebimento]" class="form-control">
+                          {% if servico.aviso_recebimento == 's' %}
+                          <option value="s" selected="selected">{{ text_yes }}</option>
+                          <option value="n">{{ text_no }}</option>
+                          {% else %}
+                          <option value="s">{{ text_yes }}</option>
+                          <option value="n" selected="selected">{{ text_no }}</option>
+                          {% endif %}
+                        </select>
+                      </td>
+                      <td class="text-left">
+                        <select name="shipping_correios_servicos[{{ servicos_row }}][valor_declarado]" class="form-control">
+                          {% if servico.valor_declarado == 's' %}
+                          <option value="s" selected="selected">{{ text_yes }}</option>
+                          <option value="n">{{ text_no }}</option>
+                          {% else %}
+                          <option value="s">{{ text_yes }}</option>
+                          <option value="n" selected="selected">{{ text_no }}</option>
+                          {% endif %}
+                        </select>
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_servicos[{{ servicos_row }}][minimo_declarado]" value="{{ servico.minimo_declarado }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_servicos[{{ servicos_row }}][maximo_declarado]" value="{{ servico.maximo_declarado }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_servicos[{{ servicos_row }}][comprimento_minimo]" value="{{ servico.comprimento_minimo }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_servicos[{{ servicos_row }}][comprimento_maximo]" value="{{ servico.comprimento_maximo }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_servicos[{{ servicos_row }}][largura_minima]" value="{{ servico.largura_minima }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_servicos[{{ servicos_row }}][largura_maxima]" value="{{ servico.largura_maxima }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_servicos[{{ servicos_row }}][altura_minima]" value="{{ servico.altura_minima }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_servicos[{{ servicos_row }}][altura_maxima]" value="{{ servico.altura_maxima }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_servicos[{{ servicos_row }}][peso_minimo]" value="{{ servico.peso_minimo }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_servicos[{{ servicos_row }}][peso_maximo]" value="{{ servico.peso_maximo }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_servicos[{{ servicos_row }}][soma_maxima]" value="{{ servico.soma_maxima }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <button type="button" onclick="$('#servico-row{{ servicos_row }}').remove();" class="btn btn-danger"><i class="fa fa-minus-circle"></i> {{ button_remove }}</button>
+                      </td>
+                    </tr>
+                    {% set servicos_row = servicos_row + 1 %}
+                    {% endfor %}
+                    {% endif %}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colspan="17"></td>
+                      <td class="text-left"><button type="button" onclick="addServico();" class="btn btn-primary"><i class="fa fa-plus-circle"></i> {{ button_add }}</button></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-promocoes">
+              <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ text_info_promocoes }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+              </div>
+              {% if error_promocoes %}
+              <div class="text-danger">{{ error_promocoes }}</div>
+              {% endif %}
+              <div class="table-responsive">
+                <table id="promocoes" class="table table-striped table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <td class="text-left" style="min-width:150px"><span class="text-danger">*</span> {{ entry_codigo_servico }}</td>
+                      <td class="text-left" style="min-width:200px"><span class="text-danger">*</span> {{ entry_descricao_frete }}</td>
+                      <td class="text-left" style="min-width:120px"><span class="text-danger">*</span> {{ entry_cep_inicial }}</td>
+                      <td class="text-left" style="min-width:120px"><span class="text-danger">*</span> {{ entry_cep_final }}</td>
+                      <td class="text-left" style="min-width:120px">{{ entry_total }}</td>
+                      <td class="text-left" style="min-width:140px">{{ entry_peso_minimo }}</td>
+                      <td class="text-left" style="min-width:140px">{{ entry_peso_maximo }}</td>
+                      <td class="text-left" style="min-width:140px">{{ entry_tipo_desconto }}</td>
+                      <td class="text-left" style="min-width:160px"><span class="text-danger">*</span> {{ entry_desconto }}</td>
+                      <td class="text-left" style="min-width:160px">{{ entry_tipo_clientes }}</td>
+                      <td></td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% set promocoes_row = 0 %}
+                    {% if shipping_correios_promocoes %}
+                    {% for promocao in shipping_correios_promocoes %}
+                    <tr id="promocao-row{{ promocoes_row }}">
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_promocoes[{{ promocoes_row }}][codigo]" value="{{ promocao.codigo }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_promocoes[{{ promocoes_row }}][descricao]" value="{{ promocao.descricao }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_promocoes[{{ promocoes_row }}][cep_inicial]" value="{{ promocao.cep_inicial }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_promocoes[{{ promocoes_row }}][cep_final]" value="{{ promocao.cep_final }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_promocoes[{{ promocoes_row }}][total]" value="{{ promocao.total }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_promocoes[{{ promocoes_row }}][peso_minimo]" value="{{ promocao.peso_minimo }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_promocoes[{{ promocoes_row }}][peso_maximo]" value="{{ promocao.peso_maximo }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <select name="shipping_correios_promocoes[{{ promocoes_row }}][tipo_desconto]" class="form-control">
+                          {% for chave, valor in descontos %}
+                          {% if promocao.tipo_desconto == chave %}
+                          <option value="{{ chave }}" selected="selected">{{ valor }}</option>
+                          {% else %}
+                          <option value="{{ chave }}">{{ valor }}</option>
+                          {% endif %}
+                          {% endfor %}
+                        </select>
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_promocoes[{{ promocoes_row }}][desconto]" value="{{ promocao.desconto }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <select name="shipping_correios_promocoes[{{ promocoes_row }}][customer_group]" class="form-control">
+                          <option value="">{{ text_all }}</option>
+                          {% for customer_group in customer_groups %}
+                          {% if promocao.customer_group == customer_group.customer_group_id %}
+                          <option value="{{ customer_group.customer_group_id }}" selected="selected">{{ customer_group.name }}</option>
+                          {% else %}
+                          <option value="{{ customer_group.customer_group_id }}">{{ customer_group.name }}</option>
+                          {% endif %}
+                          {% endfor %}
+                        </select>
+                      </td>
+                      <td class="text-left">
+                        <button type="button" onclick="$('#promocao-row{{ promocoes_row }}').remove();" class="btn btn-danger"><i class="fa fa-minus-circle"></i> {{ button_remove }}</button>
+                      </td>
+                    </tr>
+                    {% set promocoes_row = promocoes_row + 1 %}
+                    {% endfor %}
+                    {% endif %}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colspan="10"></td>
+                      <td class="text-left"><button type="button" onclick="addPromocao();" class="btn btn-primary"><i class="fa fa-plus-circle"></i> {{ button_add }}</button></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-restricoes">
+              <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ text_info_restricoes }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+              </div>
+              {% if error_restricoes %}
+              <div class="text-danger">{{ error_restricoes }}</div>
+              {% endif %}
+              <div class="table-responsive">
+                <table id="restricoes" class="table table-striped table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <td class="text-left" style="min-width:150px"><span class="text-danger">*</span> {{ entry_codigo_servico }}</td>
+                      <td class="text-left" style="min-width:200px"><span class="text-danger">*</span> {{ entry_descricao_local }}</td>
+                      <td class="text-left" style="min-width:120px"><span class="text-danger">*</span> {{ entry_cep_inicial }}</td>
+                      <td class="text-left" style="min-width:120px"><span class="text-danger">*</span> {{ entry_cep_final }}</td>
+                      <td></td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% set restricoes_row = 0 %}
+                    {% if shipping_correios_restricoes %}
+                    {% for restricao in shipping_correios_restricoes %}
+                    <tr id="restricao-row{{ restricoes_row }}">
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_restricoes[{{ restricoes_row }}][codigo]" value="{{ restricao.codigo }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_restricoes[{{ restricoes_row }}][descricao]" value="{{ restricao.descricao }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_restricoes[{{ restricoes_row }}][cep_inicial]" value="{{ restricao.cep_inicial }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_restricoes[{{ restricoes_row }}][cep_final]" value="{{ restricao.cep_final }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <button type="button" onclick="$('#restricao-row{{ restricoes_row }}').remove();" class="btn btn-danger"><i class="fa fa-minus-circle"></i> {{ button_remove }}</button>
+                      </td>
+                    </tr>
+                    {% set restricoes_row = restricoes_row + 1 %}
+                    {% endfor %}
+                    {% endif %}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colspan="4"></td>
+                      <td class="text-left"><button type="button" onclick="addRestricao();" class="btn btn-primary"><i class="fa fa-plus-circle"></i> {{ button_add }}</button></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-bloqueios">
+              <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ text_info_bloqueios }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+              </div>
+              {% if error_bloqueios %}
+              <div class="text-danger">{{ error_bloqueios }}</div>
+              {% endif %}
+              <div class="table-responsive">
+                <table id="bloqueios" class="table table-striped table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <td class="text-left" style="min-width:150px"><span class="text-danger">*</span> {{ entry_codigo_servico }}</td>
+                      <td class="text-left" style="min-width:200px"><span class="text-danger">*</span> {{ entry_departamento }}</td>
+                      <td></td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% set bloqueios_row = 0 %}
+                    {% if shipping_correios_bloqueios %}
+                    {% for bloqueio in shipping_correios_bloqueios %}
+                    <tr id="bloqueio-row{{ bloqueios_row }}">
+                      <td class="text-left">
+                        <input type="text" name="shipping_correios_bloqueios[{{ bloqueios_row }}][codigo]" value="{{ bloqueio.codigo }}" placeholder="" class="form-control" />
+                      </td>
+                      <td class="text-left">
+                        <select name="shipping_correios_bloqueios[{{ bloqueios_row }}][category_id]" class="form-control">
+                          {% for category in categories %}
+                          {% if category.category_id == bloqueio.category_id %}
+                          <option value="{{ category.category_id }}" selected="selected">{{ category.name }}</option>
+                          {% else %}
+                          <option value="{{ category.category_id }}">{{ category.name }}</option>
+                          {% endif %}
+                          {% endfor %}
+                        </select>
+                      </td>
+                      <td class="text-left">
+                        <button type="button" onclick="$('#bloqueio-row{{ bloqueios_row }}').remove();" class="btn btn-danger"><i class="fa fa-minus-circle"></i> {{ button_remove }}</button>
+                      </td>
+                    </tr>
+                    {% set bloqueios_row = bloqueios_row + 1 %}
+                    {% endfor %}
+                    {% endif %}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colspan="2"></td>
+                      <td class="text-left"><button type="button" onclick="addBloqueio();" class="btn btn-primary"><i class="fa fa-plus-circle"></i> {{ button_add }}</button></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-finalizacao">
+              <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ text_info_finalizacao }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_titulo }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_titulo }}</span>
+                </div>
+                <div class="col-sm-3">
+                  <input type="text" name="shipping_correios_titulo" value="{{ shipping_correios_titulo }}" placeholder="" class="form-control" />
+                  {% if error_titulo %}
+                  <div class="text-danger">{{ error_titulo }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_imagem }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_imagem }}</span>
+                </div>
+                <div class="col-sm-9">
+                  <a href="" id="thumb-image" data-toggle="image" class="img-thumbnail">
+                    <img src="{{ thumb }}" alt="" title="" data-placeholder="{{ no_image }}" />
+                  </a>
+                  <input type="hidden" name="shipping_correios_imagem" value="{{ shipping_correios_imagem }}" id="input-image" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript"><!--
+  var servicos_row = {{ servicos_row }};
+
+  function addServico() {
+    html  = '<tr id="servico-row' + servicos_row + '">';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_servicos[' + servicos_row + '][codigo]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_servicos[' + servicos_row + '][descricao]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left">';
+    html += '    <select name="shipping_correios_servicos[' + servicos_row + '][desativar_cotacoes]" class="form-control">';
+    html += '      <option value="s">{{ text_yes }}</option>';
+    html += '      <option value="n" selected="selected">{{ text_no }}</option>';
+    html += '    </select>';
+    html += '  </td>';
+    html += '  <td class="text-left">';
+    html += '    <select name="shipping_correios_servicos[' + servicos_row + '][mao_propria]" class="form-control">';
+    html += '      <option value="s">{{ text_yes }}</option>';
+    html += '      <option value="n" selected="selected">{{ text_no }}</option>';
+    html += '    </select>';
+    html += '  </td>';
+    html += '  <td class="text-left">';
+    html += '    <select name="shipping_correios_servicos[' + servicos_row + '][aviso_recebimento]" class="form-control">';
+    html += '      <option value="s">{{ text_yes }}</option>';
+    html += '      <option value="n" selected="selected">{{ text_no }}</option>';
+    html += '    </select>';
+    html += '  </td>';
+    html += '  <td class="text-left">';
+    html += '    <select name="shipping_correios_servicos[' + servicos_row + '][valor_declarado]" class="form-control">';
+    html += '      <option value="s">{{ text_yes }}</option>';
+    html += '      <option value="n" selected="selected">{{ text_no }}</option>';
+    html += '    </select>';
+    html += '  </td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_servicos[' + servicos_row + '][minimo_declarado]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_servicos[' + servicos_row + '][maximo_declarado]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_servicos[' + servicos_row + '][comprimento_minimo]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_servicos[' + servicos_row + '][comprimento_maximo]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_servicos[' + servicos_row + '][largura_minima]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_servicos[' + servicos_row + '][largura_maxima]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_servicos[' + servicos_row + '][altura_minima]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_servicos[' + servicos_row + '][altura_maxima]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_servicos[' + servicos_row + '][peso_minimo]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_servicos[' + servicos_row + '][peso_maximo]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_servicos[' + servicos_row + '][soma_maxima]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left">';
+    html += '    <button type="button" onclick="$(\'#servico-row' + servicos_row + '\').remove();" class="btn btn-danger"><i class="fa fa-minus-circle"></i> {{ button_remove }}</button>';
+    html += '  </td>';
+    html += '</tr>';
+
+    $('#servicos tbody').append(html);
+
+    servicos_row++;
+  };
+
+  var promocoes_row = {{ promocoes_row }};
+
+  function addPromocao() {
+    html  = '<tr id="promocao-row' + promocoes_row + '">';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_promocoes[' + promocoes_row + '][codigo]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_promocoes[' + promocoes_row + '][descricao]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_promocoes[' + promocoes_row + '][cep_inicial]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_promocoes[' + promocoes_row + '][cep_final]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_promocoes[' + promocoes_row + '][total]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_promocoes[' + promocoes_row + '][peso_minimo]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_promocoes[' + promocoes_row + '][peso_maximo]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left">';
+    html += '    <select name="shipping_correios_promocoes[' + promocoes_row + '][tipo_desconto]" class="form-control">';
+    {% for chave, valor in descontos %}
+    html += '      <option value="{{ chave }}">{{ valor }}</option>';
+    {% endfor %}
+    html += '    </select>';
+    html += '  </td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_promocoes[' + promocoes_row + '][desconto]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left">';
+    html += '    <select name="shipping_correios_promocoes[' + promocoes_row + '][customer_group]" class="form-control">';
+    html += '      <option value="">{{ text_all }}</option>';
+    {% for customer_group in customer_groups %}
+    html += '      <option value="{{ customer_group.customer_group_id }}">{{ customer_group.name }}</option>';
+    {% endfor %}
+    html += '    </select>';
+    html += '  </td>';
+    html += '  <td class="text-left">';
+    html += '    <button type="button" onclick="$(\'#promocao-row' + promocoes_row + '\').remove();" class="btn btn-danger"><i class="fa fa-minus-circle"></i> {{ button_remove }}</button>';
+    html += '  </td>';
+    html += '</tr>';
+
+    $('#promocoes tbody').append(html);
+
+    promocoes_row++;
+  };
+
+  var restricoes_row = {{ restricoes_row }};
+
+  function addRestricao() {
+    html  = '<tr id="restricao-row' + restricoes_row + '">';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_restricoes[' + restricoes_row + '][codigo]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_restricoes[' + restricoes_row + '][descricao]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_restricoes[' + restricoes_row + '][cep_inicial]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_restricoes[' + restricoes_row + '][cep_final]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left">';
+    html += '    <button type="button" onclick="$(\'#restricao-row' + restricoes_row + '\').remove();" class="btn btn-danger"><i class="fa fa-minus-circle"></i> {{ button_remove }}</button>';
+    html += '  </td>';
+    html += '</tr>';
+
+    $('#restricoes tbody').append(html);
+
+    restricoes_row++;
+  };
+
+  var bloqueios_row = {{ bloqueios_row }};
+
+  function addBloqueio() {
+    html  = '<tr id="bloqueio-row' + bloqueios_row + '">';
+    html += '  <td class="text-left"><input type="text" name="shipping_correios_bloqueios[' + bloqueios_row + '][codigo]" value="" placeholder="" class="form-control" /></td>';
+    html += '  <td class="text-left">';
+    html += '    <select name="shipping_correios_bloqueios[' + bloqueios_row + '][category_id]" class="form-control">';
+    html += '      <option value="" selected="selected"></option>';
+    {% for category in categories %}
+    html += '      <option value="{{ category.category_id }}">{{ category.name }}</option>';
+    {% endfor %}
+    html += '    </select>';
+    html += '  </td>';
+    html += '  <td class="text-left">';
+    html += '    <button type="button" onclick="$(\'#bloqueio-row' + bloqueios_row + '\').remove();" class="btn btn-danger"><i class="fa fa-minus-circle"></i> {{ button_remove }}</button>';
+    html += '  </td>';
+    html += '</tr>';
+
+    $('#bloqueios tbody').append(html);
+
+    bloqueios_row++;
+  };
+//--></script>
+{{ footer }}

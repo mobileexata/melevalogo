@@ -1,0 +1,272 @@
+{% if habilitado %}
+<style id="outside"> #payment { display: none; } </style>
+<style>
+  .alert {
+    font-size: 13px !important;
+    margin-bottom: 10px;
+  }
+  #payment .alert-danger {
+    color: #a94442 !important;
+    background: #f2dede !important;
+    background-color: #f2dede !important;
+    font-size: 14px !important;
+  }
+  #payment label {
+    width: 100% !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+  }
+  #payment input[type="text"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    border: 1px solid #999 !important;
+    height: 50px !important;
+    font-size: 14px !important;
+  }
+  #payment select {
+    width: 100% !important;
+    max-width: 100% !important;
+    border: 1px solid #999 !important;
+    height: 50px !important;
+    font-size: 14px !important;
+  }
+  #payment .pull-left, #payment input[type="button"] {
+    height: 50px !important;
+    white-space: nowrap !important;
+    font-size: 18px !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+  }
+  @media only screen and (max-device-width: 767px) {
+    #payment label, #payment input[type="text"], #payment select { font-size: 1.2em !important; }
+  }
+  @media only screen and (max-width: 460px) {
+    #payment .col-xs-4 { width: 100% !important; margin-top: 5px !important; }
+  }
+  @media only screen and (max-width: 767px) {
+    #payment .form-group { margin-bottom: 0px !important; }
+    #payment label { margin-top: 10px !important; margin-bottom: 10px !important; }
+    #payment .pull-left, #payment input[type="button"] { width: 100% !important; max-width: 100% !important; }
+  }
+</style>
+{% if sandbox %}
+<div class="alert alert-warning" role="alert">{{ text_sandbox }}</div>
+{% endif %}
+<div class="alert alert-info" role="alert">{{ text_info }}</div>
+{{ instrucoes }}
+<form class="form-horizontal" onkeypress="return event.keyCode != 13" id="payment">
+  <legend>{{ text_detalhes }}</legend>
+  <div class="form-group">
+    <div class="col-sm-4" id="bandeiras"></div>
+    <div class="col-sm-4">
+      <label>{{ entry_cartao }}</label>
+      <input type="text" name="cartao" value="" placeholder="" maxlength="19" autocomplete="off" class="form-control" inputmode="numeric" />
+    </div>
+    <div class="col-sm-2" id="meses"></div>
+    <div class="col-sm-2" id="anos"></div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-4">
+      <label>{{ entry_codigo }}</label>
+      <input type="text" name="codigo" value="" placeholder="" maxlength="4" autocomplete="off" class="form-control" inputmode="numeric" />
+    </div>
+    <div class="col-sm-4">
+      <label>{{ entry_nome }}</label>
+      <input type="text" name="nome" value="" placeholder="" maxlength="30" autocomplete="off" class="form-control" />
+    </div>
+    <div class="col-sm-4">
+      <label>{{ entry_valor }}</label>
+      <input type="text" name="valor" value="{{ total }}" class="form-control" disabled="disabled" />
+    </div>
+  </div>
+  <div id="alerta-cd"></div>
+  <div class="buttons">
+    <div class="pull-left">
+      <input type="button" value="{{ texto_botao }}" id="button-confirm" class="btn btn-{{ estilo_botao }} btn-lg" data-loading-text="{{ text_carregando }}" />
+    </div>
+  </div>
+</form>
+<script type="text/javascript" src="catalog/view/theme/default/template/extension/payment/rede_rest/assets/js/jquery.loadingoverlay.min.js?v={{ version }}"></script>
+<script type="text/javascript"><!--
+  if (
+    typeof Journal === 'object'
+    && (typeof _QuickCheckout === 'object' || typeof _QuickCheckoutData === 'object')
+  ) {
+    {% if alerta %}
+    $('#alerta-cd').html('<div class="alert alert-warning" role="alert" id="warning">{{ alerta }}</div>');
+    {% endif %}
+  }
+
+  function bandeiras() {
+    json = {{ bandeiras }};
+
+    html = '<label>{{ entry_bandeira }}</label>';
+    html += '<select name="bandeira" style="display: inline;" class="form-control">';
+    for (i = 0; i <= json.length-1; i++) {
+      if (i == '0') {
+        html += '<option value="' + json[i]['bandeira'] + '" selected>' + json[i]['titulo'] + '</option>';
+      } else {
+        html += '<option value="' + json[i]['bandeira'] + '">' + json[i]['titulo'] + '</option>';
+      }
+    }
+    html += '</select>';
+
+    $('#bandeiras').html(html);
+  };
+
+  bandeiras();
+
+  function meses() {
+    html = '<label>{{ entry_validade_mes }}</label>';
+    html += '<select name="mes" style="display: inline;" class="form-control">';
+    html += '<option value="">{{ text_mes }}</option>';
+    for (i = 1; i <= 12; i++) {
+      var pad_left = i < 10 ? '0' : '';
+      var month = pad_left + i;
+
+      html += '<option value="' + month + '">' + month + '</option>';
+    }
+    html += '</select>';
+
+    $('#meses').html(html);
+  };
+
+  meses();
+
+  function anos() {
+    html = '<label>{{ entry_validade_ano }}</label>';
+    html += '<select name="ano" style="display: inline;" class="form-control">';
+    html += '<option value="">{{ text_ano }}</option>';
+    for (i = 0; i < 21; i++) {
+      html += '<option value="' + ((new Date()).getFullYear() + i) + '">' + ((new Date()).getFullYear() + i) + '</option>';
+    }
+    html += '</select>';
+
+    $('#anos').html(html);
+  };
+
+  anos();
+
+  function transacao() {
+    $.ajax({
+      url: 'index.php?route=extension/payment/rede_rest_debito/transacao',
+      type: 'post',
+      data: $('#payment input[type="text"], #payment input[type="hidden"], #payment select'),
+      dataType: 'json',
+      beforeSend: function() {
+        $.LoadingOverlay('show');
+
+        $('{{ container_botao }}').button('loading');
+        $('input').prop('disabled', true);
+        $('select').prop('disabled', true);
+        $('button').prop('disabled', true);
+      },
+      complete: function() {
+        $('{{ container_botao }}').button('reset');
+        $('input').prop('disabled', false);
+        $('select').prop('disabled', false);
+        $('button').prop('disabled', false);
+        $('#payment input[name="cartao"]').val('');
+        $('#payment select[name="mes"]').val('');
+        $('#payment select[name="ano"]').val('');
+        $('#payment input[name="codigo"]').val('');
+        $('#payment input[name="nome"]').val('');
+        $('#payment input[name="valor"]').prop('disabled', true);
+
+        $.LoadingOverlay('hide');
+      },
+      success: function(json) {
+        $.LoadingOverlay('hide');
+
+        if (json['error']) {
+          $('#alerta-cd').html('<div class="alert alert-warning" role="alert" id="warning">'+json['error']+'</div>');
+        } else if (json['redirect']) {
+          $('#button-confirm').hide();
+          $('#alerta-cd').html('<div class="alert alert-success" role="alert">{{ text_redirecionando }}</div>');
+          location.href = json['redirect'];
+        } else {
+          $('#alerta-cd').html('<div class="alert alert-warning" role="alert" id="warning">{{ error_configuracao }}</div>');
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        $.LoadingOverlay('hide');
+
+        if (jqXHR.status == 200 || jqXHR.status == 404 || jqXHR.status == 500 || errorThrown == 'Not Found') {
+          $('#alerta-cd').html('<div class="alert alert-warning" role="alert" id="warning">{{ error_configuracao }}</div>');
+        }
+      }
+    });
+  };
+
+  function validar() {
+    var erros = 0;
+    var campos = [
+      'cartao',
+      'mes',
+      'ano',
+      'codigo',
+      'nome'
+    ];
+
+    $('div #warning').each(function(){ $(this).remove(); });
+    $('#payment label').removeClass('text-danger');
+    $('#payment input[type="text"], #payment select').removeClass('alert-danger');
+    $('#payment input[type="text"], #payment select').each(function() {
+      for (i = 0; i < campos.length; i++) {
+        var nome = $(this).attr('name');
+        var valor = $.trim($(this).val());
+
+        if (nome == campos[i]) {
+          if (nome == 'cartao') {
+            if (valor.length < 13) {
+              $(this).toggleClass('alert-danger');
+              $('label#' + nome).addClass('text-danger');
+              erros++;
+            }
+          } else if (nome == 'codigo') {
+            if (valor.length !== 3) {
+              $(this).toggleClass('alert-danger');
+              $('label#' + nome).addClass('text-danger');
+              erros++;
+            }
+          } else {
+            if (valor.length == 0) {
+              $(this).toggleClass('alert-danger');
+              $('label#' + nome).addClass('text-danger');
+              erros++;
+            }
+          }
+        }
+      }
+    });
+
+    if (
+      typeof Journal === 'object'
+      && (typeof _QuickCheckout === 'object' || typeof _QuickCheckoutData === 'object')
+    ) {
+      if ($('div.journal-loading-overlay').length > 0) {
+        $('div.journal-loading-overlay').remove();
+      }
+    }
+
+    if (erros == 0) {
+      return true;
+    } else {
+      $('{{ container_botao }}').button('loading');
+      $('{{ container_botao }}').button('reset');
+
+      return false;
+    };
+  };
+
+  if (self === top) {
+    var outside = document.getElementById('outside');
+    outside.parentNode.removeChild(outside);
+  }
+//--></script>
+<script type="text/javascript" src="catalog/view/theme/default/template/extension/payment/rede_rest/assets/js/debito.js?v={{ version }}"></script>
+{% else %}
+<div class="alert alert-warning" role="alert">{{ error_bandeiras }}</div>
+{% endif %}

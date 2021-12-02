@@ -1,0 +1,289 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-module" input type="hidden" id="save_stay" name="save_stay" value="1" data-toggle="tooltip" title="{{ button_save_stay }}" class="btn btn-success"><i class="fa fa-save"></i></button>
+        <button type="submit" form="form-module" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+      </div>
+      <h1>{{ heading_title }}</h1> <span class="badge">{{ versao }}</span>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    {% if success %}
+    <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-module" class="form-horizontal">
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab-geral" data-toggle="tab">{{ tab_geral }}</a></li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="tab-geral">
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_idiomas }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_idiomas }}</span>
+                </div>
+                <div class="col-sm-6">
+                  <div class="well well-sm" style="height: 150px; overflow: auto;">
+                    {% for language in languages %}
+                    <div class="checkbox">
+                      <label>
+                        {% if language.code in module_cotacao_frete_languages %}
+                        <input type="checkbox" name="module_cotacao_frete_languages[]" value="{{ language.code }}" checked="checked" />
+                        {{ language.name }}
+                        {% else %}
+                        <input type="checkbox" name="module_cotacao_frete_languages[]" value="{{ language.code }}" />
+                        {{ language.name }}
+                        {% endif %}
+                      </label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  <a onclick="$(this).parent().find(':checkbox').prop('checked', true);">{{ text_select_all }}</a> / <a onclick="$(this).parent().find(':checkbox').prop('checked', false);">{{ text_unselect_all }}</a>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_lojas }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_lojas }}</span>
+                </div>
+                <div class="col-sm-6">
+                  <div class="well well-sm" style="height: 150px; overflow: auto;">
+                    <div class="checkbox">
+                      <label>
+                        {% if '0' in module_cotacao_frete_stores %}
+                        <input type="checkbox" name="module_cotacao_frete_stores[]" value="0" checked="checked" />
+                        {{ store_default }}
+                        {% else %}
+                        <input type="checkbox" name="module_cotacao_frete_stores[]" value="0" />
+                        {{ store_default }}
+                        {% endif %}
+                      </label>
+                    </div>
+                    {% for store in stores %}
+                    <div class="checkbox">
+                      <label>
+                        {% if store.store_id in module_cotacao_frete_stores %}
+                        <input type="checkbox" name="module_cotacao_frete_stores[]" value="{{ store.store_id }}" checked="checked" />
+                        {{ store.name }}
+                        {% else %}
+                        <input type="checkbox" name="module_cotacao_frete_stores[]" value="{{ store.store_id }}" />
+                        {{ store.name }}
+                        {% endif %}
+                      </label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  <a onclick="$(this).parent().find(':checkbox').prop('checked', true);">{{ text_select_all }}</a> / <a onclick="$(this).parent().find(':checkbox').prop('checked', false);">{{ text_unselect_all }}</a>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_exibir_pais }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_exibir_pais }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <select name="module_cotacao_frete_exibir_pais" class="form-control">
+                    {% if module_cotacao_frete_exibir_pais %}
+                    <option value="1" selected="selected">{{ text_yes }}</option>
+                    <option value="0">{{ text_no }}</option>
+                    {% else %}
+                    <option value="1">{{ text_yes }}</option>
+                    <option value="0" selected="selected">{{ text_no }}</option>
+                    {% endif %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_country_id }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_country_id }}</span>
+                </div>
+                <div class="col-sm-4">
+                  <select name="module_cotacao_frete_country_id" class="form-control">
+                    <option value="0">{{ text_none }}</option>
+                    {% for country in countries %}
+                    {% if country.country_id == module_cotacao_frete_country_id %}
+                    <option value="{{ country.country_id }}" selected="selected">{{ country.name }}</option>
+                    {% else %}
+                    <option value="{{ country.country_id }}">{{ country.name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_exibir_estado }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_exibir_estado }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <select name="module_cotacao_frete_exibir_estado" class="form-control">
+                    {% if module_cotacao_frete_exibir_estado %}
+                    <option value="1" selected="selected">{{ text_yes }}</option>
+                    <option value="0">{{ text_no }}</option>
+                    {% else %}
+                    <option value="1">{{ text_yes }}</option>
+                    <option value="0" selected="selected">{{ text_no }}</option>
+                    {% endif %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_zone_id }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_zone_id }}</span>
+                </div>
+                <div class="col-sm-4">
+                  <select name="module_cotacao_frete_zone_id" class="form-control">
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_exibir_numero }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_exibir_numero }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <select name="module_cotacao_frete_exibir_numero" class="form-control">
+                    {% if module_cotacao_frete_exibir_numero %}
+                    <option value="1" selected="selected">{{ text_yes }}</option>
+                    <option value="0">{{ text_no }}</option>
+                    {% else %}
+                    <option value="1">{{ text_yes }}</option>
+                    <option value="0" selected="selected">{{ text_no }}</option>
+                    {% endif %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_exibir_documento }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_exibir_documento }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <select name="module_cotacao_frete_exibir_documento" class="form-control">
+                    {% if module_cotacao_frete_exibir_documento %}
+                    <option value="1" selected="selected">{{ text_yes }}</option>
+                    <option value="0">{{ text_no }}</option>
+                    {% else %}
+                    <option value="1">{{ text_yes }}</option>
+                    <option value="0" selected="selected">{{ text_no }}</option>
+                    {% endif %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_codigo_manual }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_codigo_manual }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <select name="module_cotacao_frete_codigo_manual" class="form-control">
+                    {% if module_cotacao_frete_codigo_manual %}
+                    <option value="1" selected="selected">{{ text_yes }}</option>
+                    <option value="0">{{ text_no }}</option>
+                    {% else %}
+                    <option value="1">{{ text_yes }}</option>
+                    <option value="0" selected="selected">{{ text_no }}</option>
+                    {% endif %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_container_opcoes }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_container_opcoes }}</span>
+                </div>
+                <div class="col-sm-2">
+                  <input type="text" name="module_cotacao_frete_container_opcoes" value="{{ module_cotacao_frete_container_opcoes }}" placeholder="" class="form-control" />
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><span class="text-danger">*</span> <strong>{{ entry_codigo_css }}</strong></h5>
+                  <span class="help"><i class="fa fa-info-circle"></i> {{ help_codigo_css }}</span>
+                </div>
+                <div class="col-sm-9">
+                  <textarea name="module_cotacao_frete_codigo_css" rows="8" class="form-control">{{ module_cotacao_frete_codigo_css }}</textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-3">
+                  <h5><strong>{{ entry_status }}</strong></h5>
+                </div>
+                <div class="col-sm-2">
+                  <select name="module_cotacao_frete_status" class="form-control">
+                    {% if module_cotacao_frete_status %}
+                    <option value="1" selected="selected">{{ text_enabled }}</option>
+                    <option value="0">{{ text_disabled }}</option>
+                    {% else %}
+                    <option value="1">{{ text_enabled }}</option>
+                    <option value="0" selected="selected">{{ text_disabled }}</option>
+                    {% endif %}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript"><!--
+  $('select[name="module_cotacao_frete_country_id"]').on('change', function() {
+    $.ajax({
+      url: 'index.php?route=localisation/country/country&user_token={{ user_token }}&country_id=' + this.value,
+      dataType: 'json',
+      beforeSend: function() {
+        $('select[name="module_cotacao_frete_country_id"]').after(' <i class="fa fa-circle-o-notch fa-spin"></i>');
+      },
+      complete: function() {
+        $('.fa-spin').remove();
+      },
+      success: function(json) {
+        html = '<option value="0" selected="selected">{{ text_none }}</option>';
+
+        if (json['zone'] && json['zone'] != '') {
+          for (i = 0; i < json['zone'].length; i++) {
+            html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+
+            if (json['zone'][i]['zone_id'] == '{{ module_cotacao_frete_zone_id }}') {
+              html += ' selected="selected"';
+            }
+
+            html += '>' + json['zone'][i]['name'] + '</option>';
+          }
+        }
+
+        $('select[name="module_cotacao_frete_zone_id"]').html(html);
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+  });
+
+  $('select[name="module_cotacao_frete_country_id"]').trigger('change');
+//--></script>
+{{ footer }}

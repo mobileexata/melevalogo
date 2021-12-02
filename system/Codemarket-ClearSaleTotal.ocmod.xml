@@ -1,0 +1,334 @@
+<!--
+    Copyright 2013-2021 Codemarket - Todos os direitos reservados.
+    Alterado 01/10/2021
+-->
+<modification>
+    <name><![CDATA[<font color="#00a99d"><b>Codemarket - ClearSale Total 1.4</b></font>]]></name>
+    <code><![CDATA[Codemarket - ClearSale Total]]></code>
+    <version><![CDATA[1.4]]></version>
+    <author><![CDATA[<font color="#00a99d"><b>Codemarket- codemarket.com.br</b></font>]]></author>
+    <link>https://www.codemarket.com.br</link>
+
+    <!-- ADMINISTRADOR - ADICIONA O STATUS NO DETALHES DO PEDIDO -->
+    <file path="admin/controller/sale/order.php">
+        <operation>
+            <search>
+                <![CDATA[
+                    $this->response->setOutput($this->load->view('sale/order_info', $data));
+                ]]>
+            </search>
+            <add position="before">
+                <![CDATA[
+                    if(!empty($this->request->get['order_id'])){
+                        require_once(DIR_CATALOG.'model/module/code_clearsale.php');
+                        $model592 = new ModelModuleCodeClearsale($this->registry);
+                        $status592 = $model592->consultarDadosServico($this->request->get['order_id'], 'code_clearsale_webhook');
+
+                        if(empty($status592)){
+                            $status592 = $model592->consultaStatusAPI($this->request->get['order_id']);
+                        }
+
+                        if(!empty($status592['status'])){
+                            switch ($status592['status']) {
+                                case "APA":
+                                    $status592 = 'Aprovação Automática';
+                                case "APM":
+                                    $status592 = 'Aprovação Manual';
+                                    break;
+                                case "RPM":
+                                    $status592 = 'Reprovado Sem Suspeita';
+                                    break;
+                                case "AMA":
+                                    $status592 = 'Análise manual';
+                                    break;
+                                case "NVO":
+                                    $status592 = 'Novo';
+                                    break;
+                                case "SUS":
+                                    $status592 = 'Suspensão Manual';
+                                    break;
+                                case "CAN":
+                                    $status592 = 'Cancelado pelo Cliente';
+                                    break;
+                                case "FRD":
+                                    $status592 = 'Fraude Confirmada';
+                                    break;
+                                case "RPA":
+                                    $status592 = 'Reprovação Automática';
+                                    break;
+                                case "RPP":
+                                    $status592 = 'Reprovação Por Política';
+                                    break;
+                                case "APP":
+                                    $status592 = 'Aprovação Por Política';
+                                    break;
+                            }
+                        }
+
+                        $data['status592'] = !empty($status592) ? $status592 : false;
+                    }
+                ]]>
+            </add>
+        </operation>
+    </file>
+
+    <file path="admin/view/template/sale/order_info.twig">
+        <operation>
+            <search>
+                <![CDATA[
+                    <td>{{ date_added }}</td>
+                ]]>
+            </search>
+            <add position="replace">
+                <![CDATA[
+                    {% if status592 is not empty %}
+                        <td>{{ date_added }} <div class="label label-info" style='font-size: 13px; margin-bottom: 0px;'>ClearSale Status:  {{ status592 }}</div></td>
+                    {% else %}
+                        <td>{{ date_added }}</td>
+                    {% endif %}
+                ]]>
+            </add>
+        </operation>
+    </file>
+
+    <!-- ADICIONANDO O FINGERPRINT - https://api.clearsale.com.br/docs/finger-print -->
+    <file path="catalog/controller/{common,code_checkout}*/footer.php">
+        <operation>
+            <search>
+                <![CDATA[
+                    // Whos Online
+                ]]>
+            </search>
+            <add position="before">
+                <![CDATA[
+                    if (!empty($this->request->get['route']) && ($this->request->get['route'] == 'checkout/checkout' || $this->request->get['route'] == 'code_checkout/checkout')) {
+                        $this->load->model('module/codemarket_module');
+                        $c592 = $this->model_module_codemarket_module->getModulo('592');
+
+                        if(!empty($c592) && !empty($c592->code_fingerprint) && !empty($c592->code_habilitar) && $c592->code_habilitar == 1) {
+                            $data['app592'] = (string) trim($c592->code_fingerprint);
+                            $data['sessionId592'] = (string) $this->session->getId();
+                        }
+                    } 
+                ]]>
+            </add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/{common,code_checkout}*/footer.twig">
+        <operation>
+            <search>
+                <![CDATA[
+                    </body>
+                ]]>
+            </search>
+            <add position="before">
+                <![CDATA[
+                    {% if app592 is not empty %}
+                        <script>
+                            (function (a, b, c, d, e, f, g) {
+                            a['CsdpObject'] = e; a[e] = a[e] || function () {
+                            (a[e].q = a[e].q || []).push(arguments)
+                            }, a[e].l = 1 * new Date(); f = b.createElement(c),
+                            g = b.getElementsByTagName(c)[0]; f.async = 1; f.src = d; g.parentNode.insertBefore(f, g)
+                            })(window, document, 'script', '//device.clearsale.com.br/p/fp.js', 'csdp');
+                            csdp('app', '{{ app592 }}');
+                            csdp('sessionid', '{{ sessionId592 }}');
+                        </script>
+                    {% endif %}
+                ]]>
+            </add>
+        </operation>
+    </file>
+
+    <!-- 
+        - Adiciona um Pedido na ClearSale se estiver no Status e Pagamento Certo
+        - MUDANÇA STATUS AVISO CLEARSALE - Atualiza o Status de um Pedido na ClearSale para Aprovado, Cancelado manualmente ou Chargeback 
+    -->
+    <file path="catalog/model/checkout/order.php">
+        <operation>
+            <search><![CDATA[
+                $this->cache->delete('product');
+            ]]></search>
+            <add position="after"><![CDATA[
+                if(!empty($order_status_id) && !empty($order_info)){
+                    $this->load->model('module/code_clearsale');
+                    $this->model_module_code_clearsale->incluirPedidoAPI($order_info['order_id']);
+                    $this->model_module_code_clearsale->atualizasStatus($order_info['order_id'], $order_status_id);
+                }
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- ##### PAGAMENTOS ##### -->
+    <!-- Cielo -->
+    <file path="catalog/controller/extension/payment/{cielo_api_credito,cielo_api_debito}*.php">
+        <operation>
+            <search index="0">
+                <![CDATA[
+                    $dados['SecurityCode'] = $cartao_cvv;
+                ]]>
+            </search>
+            <add position="after" trim="true">
+                <![CDATA[
+                    $this->load->model('module/code_clearsale');
+                    switch(strtolower($cartao_bandeira)){
+                        case 'visa':
+                            $type592 = 3;
+                            break;
+                        case 'mastercard':
+                            $type592 = 2;
+                            break;
+                        case 'elo':
+                            $type592 = 10;
+                            break;
+                        case 'amex':
+                            $type592 = 5;
+                            break;
+                        case 'hipercard':
+                            $type592 = 6;
+                            break;
+                        default:
+                            $type592 = '';
+                    }
+
+                    $data592 = [
+                        'order_id' => $order_info['order_id'],
+                        'type' => 1,
+                        'installments' => isset($dados['Installments']) ? (int) $dados['Installments'] : 1,
+                        'value' => $dados['Amount']/100,
+                        'card' => [
+                            'number' => $dados['CardNumber'],
+                            'bin' => '',
+                            'end' => '',
+                            'type' => $type592,
+                            'ownerName' => $dados['Holder'],
+                            'document' => '',
+                        ],
+                    ];
+
+                    $this->model_module_code_clearsale->salvarDadosServico($order_info['order_id'], $data592, $order_info['payment_code']);
+                ]]>
+            </add>
+        </operation>
+    </file>
+
+    <!-- Rede -->
+    <file path="catalog/controller/extension/payment/{rede_rest_credito,rede_rest_debito}*.php">
+        <operation>
+            <search>
+                <![CDATA[
+                    $rede = new Rede();
+                ]]>
+            </search>
+            <add position="before">
+                <![CDATA[
+                    $this->load->model('module/code_clearsale');
+                    switch(strtolower($cartao_bandeira)){
+                        case 'visa':
+                            $type592 = 3;
+                            break;
+                        case 'mastercard':
+                            $type592 = 2;
+                            break;
+                        case 'elo':
+                            $type592 = 10;
+                            break;
+                        case 'amex':
+                            $type592 = 5;
+                            break;
+                        case 'hipercard':
+                            $type592 = 6;
+                            break;
+                        default:
+                            $type592 = '';
+                    }
+
+                    $data592 = [
+                        'order_id' => $order_info['order_id'],
+                        'type' => 1,
+                        'installments' => isset($dados['installments']) ? (int) $dados['installments'] : 1,
+                        'value' => $dados['amount']/100,
+                        'card' => [
+                            'number' => $dados['cardNumber'],
+                            'bin' => '',
+                            'end' => '',
+                            'type' => $type592,
+                            'ownerName' => $dados['cardholderName'],
+                            'document' => '',
+                        ],
+                    ];
+
+                    $this->model_module_code_clearsale->salvarDadosServico($order_info['order_id'], $data592, $order_info['payment_code']);
+                ]]>
+            </add>
+        </operation>
+    </file>
+
+    <!-- GetNet -->
+    <file path="catalog/controller/extension/payment/{getnet_api_credito,getnet_api_debito}*.php">
+        <operation>
+            <search>
+                <![CDATA[
+                    $dados['security_code'] = $cartao_cvv;
+                ]]>
+            </search>
+            <add position="after">
+                <![CDATA[
+                    $this->load->model('module/code_clearsale');
+                    switch(strtolower($cartao_bandeira)){
+                        case 'visa':
+                            $type592 = 3;
+                            break;
+                        case 'mastercard':
+                            $type592 = 2;
+                            break;
+                        case 'elo':
+                            $type592 = 10;
+                            break;
+                        case 'amex':
+                            $type592 = 5;
+                            break;
+                        case 'hipercard':
+                            $type592 = 6;
+                            break;
+                        default:
+                            $type592 = '';
+                    }
+
+                    $data592 = [
+                        'order_id' => $order_info['order_id'],
+                        'type' => 1,
+                        'installments' => isset($dados['number_installments']) ? (int) $dados['number_installments'] : 1,
+                        'value' => $dados['amount']/100,
+                        'card' => [
+                            'number' => $dados['card_number'],
+                            'bin' => '',
+                            'end' => '',
+                            'type' => $type592,
+                            'ownerName' => $dados['cardholder_name'],
+                            'document' => '',
+                        ],
+                    ];
+
+                    $this->model_module_code_clearsale->salvarDadosServico($order_info['order_id'], $data592, $order_info['payment_code']);
+                ]]>
+            </add>
+        </operation>
+    </file>
+
+    <!-- VERSAO -->
+    <file path="catalog/model/module/code_activemodule.php">
+        <operation>
+            <search><![CDATA[
+                //eventVersionApp
+            ]]></search>
+            <add position="after"><![CDATA[
+                $data['592'] = [
+                    'version' => '1.4',
+                    'date' => '01/10/2021'
+                ];
+            ]]></add>
+        </operation>
+    </file>
+</modification>

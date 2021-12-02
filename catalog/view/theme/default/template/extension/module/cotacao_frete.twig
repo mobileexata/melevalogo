@@ -1,0 +1,205 @@
+<div id="formulario-cotacao" class="form-group">
+  <label class="control-label"><h4><strong><i class="fa fa-truck"></i> {{ text_titulo }}</strong></h4></label>
+  {% if exibir_pais %}
+  <p><select name="country_id" id="country_id" class="form-control">
+    <option value="0">{{ text_todos_paises }}</option>
+    {% for country in countries %}
+    {% if country.country_id == country_id %}
+    <option value="{{ country.country_id }}" selected="selected">{{ country.name }}</option>
+    {% else %}
+    <option value="{{ country.country_id }}">{{ country.name }}</option>
+    {% endif %}
+    {% endfor %}
+  </select></p>
+  {% else %}
+  <input type="hidden" name="country_id" id="country_id" value="{{ country_id }}">
+  {% endif %}
+  {% if exibir_estado %}
+  <p><select name="zone_id" id="zone_id" class="form-control">
+  </select></p>
+  {% else %}
+  <input type="hidden" name="zone_id" value="{{ zone_id }}">
+  {% endif %}
+  {% if exibir_numero %}
+  <p><input type="text" name="address_number" id="address_number" class="form-control" placeholder="{{ text_numero }}" maxlength="5"></p>
+  {% else %}
+  <input type="hidden" name="address_number" value="">
+  {% endif %}
+  {% if exibir_documento %}
+  <p><input type="text" name="document" id="document" class="form-control" placeholder="{{ text_documento }}" maxlength="18"></p>
+  {% else %}
+  <input type="hidden" name="document" value="">
+  {% endif %}
+  <div class="input-group">
+    <input type="text" name="postcode" id="postcode" class="form-control" placeholder="_____-___" required maxlength="9">
+    <span class="input-group-btn">
+      <button type="button" id="button-cotacao" data-loading-text="{{ text_calculando }}" class="btn btn-primary"> {{ button_calcular }}</button>
+    </span>
+  </div>
+</div>
+{% if codigo_css %}
+<style>
+{{ codigo_css }}
+</style>
+{% endif %}
+<div id="resultado-cotacao"></div>
+<script type="text/javascript"><!--
+  {% if exibir_numero %}
+  $('input[name=address_number]').on('keyup change', function() {
+    $(this).val($(this).val().replace(/[^\d]/g,''));
+  });
+  {% endif %}
+
+  {% if exibir_documento %}
+  var docBehavior = function (val) {
+    return val.replace(/\D/g, '').length <= 11 ? '000.000.000-009' : '00.000.000/0000-00';
+  },
+  docOptions = {
+    onKeyPress: function(val, e, field, options) {
+      field.mask(docBehavior.apply({}, arguments), options);
+    }
+  };
+  $('input[name=document][type=text]').mask(docBehavior, docOptions);
+  {% endif %}
+
+  $('#postcode').mask('00000-000');
+
+  $('#postcode').keypress(function(e) {
+    if (e.which == 13) {
+      $('#button-cotacao').trigger('click');
+    }
+  });
+
+  $('#button-cotacao').on('click', function() {
+    $('.alert, .text-danger').remove();
+    $('.form-group').removeClass('has-error');
+    $("#resultado-cotacao").html('');
+
+    {% if exibir_numero %}
+    var address_number = $('input[name="address_number"]').val().replace(/[^0-9]/g,'');
+    if ($.trim(address_number).length == 0) {
+      $("#resultado-cotacao").append('<div class="alert alert-danger">{{ error_numero }}</div>');
+      return false;
+    }
+    {% endif %}
+
+    {% if exibir_documento %}
+    var document = $('input[name="document"]').val().replace(/[^0-9]/g,'');
+    if ($.trim(document).length == 0) {
+      $("#resultado-cotacao").append('<div class="alert alert-danger">{{ error_documento }}</div>');
+      return false;
+    }
+    {% endif %}
+
+    var postcode = $('input[name="postcode"]').val().replace(/[^0-9]/g,'');
+    if (postcode.length != 8) {
+      $("#resultado-cotacao").append('<div class="alert alert-danger">{{ error_cep }}</div>');
+      return false;
+    }
+
+    $.ajax({
+      url: 'index.php?route=extension/total/shipping/cotacao_frete',
+      type: 'post',
+      data: $('{{ container_opcoes }} input[type="text"], {{ container_opcoes }} input[type="number"], {{ container_opcoes }} input[type="hidden"], {{ container_opcoes }} input[type="radio"]:checked, {{ container_opcoes }} input[type="checkbox"]:checked, {{ container_opcoes }} select, {{ container_opcoes }} textarea'),
+      dataType: 'json',
+      beforeSend: function() {
+        $("#country_id").prop("disabled", true);
+        $("#zone_id").prop("disabled", true);
+        $("#address_number").prop("disabled", true);
+        $("#document").prop("disabled", true);
+        $("#postcode").prop("disabled", true);
+        $('#button-cotacao').button('loading');
+      },
+      complete: function() {
+        $("#country_id").prop("disabled", false);
+        $("#zone_id").prop("disabled", false);
+        $("#address_number").prop("disabled", false);
+        $("#document").prop("disabled", false);
+        $("#postcode").prop("disabled", false);
+        $('#button-cotacao').button('reset');
+      },
+      success: function(json) {
+        if (json !== null) {
+          if (json['error']) {
+            if (json['error']['option']) {
+              for (i in json['error']['option']) {
+                var element = $('#input-option' + i.replace('_', '-'));
+                if (element.parent().hasClass('input-group')) {
+                  element.parent().after('<div class="text-danger">' + json['error']['option'][i] + '</div>');
+                } else {
+                  element.after('<div class="text-danger">' + json['error']['option'][i] + '</div>');
+                }
+              }
+            }
+            if (json['error']['recurring']) {
+              $('select[name="recurring_id"]').after('<div class="text-danger">' + json['error']['recurring'] + '</div>');
+            }
+            if (json['error']['warning']) {
+              $("#resultado-cotacao").append('<div class="alert alert-danger">' + json['error']['warning'] + '</div>');
+            }
+
+            $('.text-danger').parent().addClass('has-error');
+          }
+
+          if (json['shipping_method']) {
+            var html = '';
+            for (i in json['shipping_method']) {
+              if (!json['shipping_method'][i]['error']) {
+                html += '<div class="cotacao-area">';
+                html += '<div class="cotacao-titulo">' + json['shipping_method'][i]['title'] + '</div>';
+                html += '<div style="padding: 5px;">';
+                for (j in json['shipping_method'][i]['quote']) {
+                  html += '<div class="cotacao-opcao">' + json['shipping_method'][i]['quote'][j]['title'] + ' - <strong>' + json['shipping_method'][i]['quote'][j]['text'] + '</strong></div>';
+                }
+                html += '</div>';
+                html += '</div>';
+              }
+            }
+
+            $("#resultado-cotacao").append(html);
+
+            $('html, body').stop().animate({scrollTop: $("#resultado-cotacao").offset().top-100}, 1000);
+          }
+        } else {
+          $("#resultado-cotacao").append('<div class="alert alert-danger">{{ error_calculo }}</div>');
+        }
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+  });
+{% if exibir_estado %}
+  $('#country_id').on('change', function() {
+    $.ajax({
+      url: 'index.php?route=account/account/country&country_id=' + this.value,
+      dataType: 'json',
+      beforeSend: function() {
+        $('#country_id').after(' <i class="fa fa-circle-o-notch fa-spin"></i>');
+      },
+      complete: function() {
+        $('.fa-spin').remove();
+      },
+      success: function(json) {
+        html = '<option value="0">{{ text_todos_estados }}</option>';
+        if (json['zone'] && json['zone'] != '') {
+          for (i = 0; i < json['zone'].length; i++) {
+            html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+            if (json['zone'][i]['zone_id'] == '{{ zone_id }}') {
+              html += ' selected="selected"';
+            }
+            html += '>' + json['zone'][i]['name'] + '</option>';
+          }
+        }
+
+        $('select[name="zone_id"]').html(html);
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        console(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+  });
+
+  $('#country_id').trigger('change');
+{% endif %}
+//--></script>

@@ -1,0 +1,316 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        {% if breadcrumb.href %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% else %}
+        <li>{{ breadcrumb.text }}</li>
+        {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div id="progress"></div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-list"></i> {{ text_edit }}</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#tab-timeline" data-toggle="tab">{{ tab_timeline }}</a></li>
+          <li><a href="#tab-details" data-toggle="tab">{{ tab_details }}</a></li>
+          <li><a href="#tab-json-first-response" data-toggle="tab">{{ tab_json_first_response }}</a></li>
+          <li><a href="#tab-json-last-response" data-toggle="tab">{{ tab_json_last_response }}</a></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="tab-timeline">
+            <div class="row">
+              <div class="col-sm-12">
+                <ul class="timeline">
+                  {% if data_autorizacao %}
+                  <li style="border-left: 0.4em solid #3c933c;">
+                    <p><b>{{ text_data_autorizacao }} {{ data_autorizacao }} {{ text_fuso_horario }}</b><br>{{ text_valor_autorizado }} <b>{{ valor_autorizado }}</b></p>
+                    <p><button type="button" class="btn btn-success" name="button-consultar" data-loading-text="{{ text_aguarde }}"><i class="fa fa-search"></i> {{ button_consultar }}</button></p>
+                    {% if not data_captura and not data_cancelamento and dias_cancelar %}
+                    <p><small>{{ dias_cancelar }}</small></p>
+                    <p><button type="button" class="btn btn-danger" name="button-cancelar" data-loading-text="{{ text_aguarde }}"><i class="fa fa-ban"></i> {{ button_cancelar }}</button></p>
+                    {% endif %}
+                  </li>
+                  {% else %}
+                  <li style="border-left: 0.4em solid #999999;">
+                    <p><b>{{ status }}</b></p>
+                    <p><button type="button" class="btn btn-success" name="button-consultar" data-loading-text="{{ text_aguarde }}"><i class="fa fa-search"></i> {{ button_consultar }}</button></p>
+                  </li>
+                  {% endif %}
+                  {% if data_captura %}
+                  <li style="border-left: 0.4em solid #1e91cf;">
+                  <p><b>{{ text_data_captura }} {{ data_captura }} {{ text_fuso_horario }}</b><br>{{ text_valor_capturado }} <b>{{ valor_capturado }}</b></p>
+                  {% if not data_cancelamento and dias_cancelar %}
+                  <p><small>{{ dias_cancelar }}</small></p>
+                  <p>
+                    <div class="input-group" style="width: 50%;">
+                      <input type="text" name="cancelar_total" class="form-control" placeholder="{{ entry_cancelar_total }}" />
+                      <span class="input-group-btn">
+                        <button type="button" class="btn btn-danger" name="button-cancelar" data-loading-text="{{ text_aguarde }}"><i class="fa fa-ban"></i> {{ button_cancelar }}</button>
+                      </span>
+                    </div>
+                  </p>
+                  {% endif %}
+                  </li>
+                  {% elseif data_autorizacao %}
+                  <li style="border-left: 0.4em solid #1e91cf;">
+                  {% if dias_capturar %}
+                  <p><small>{{ dias_capturar }}</small></p>
+                  <p><button type="button" class="btn btn-primary" name="button-capturar" data-loading-text="{{ text_aguarde }}"><i class="fa fa-check"></i> {{ button_capturar }}</button></p>
+                  {% else %}
+                  <p class="text-danger"><b>{{ text_dias_captura_expirado }}</b></p>
+                  {% endif %}
+                  </li>
+                  {% endif %}
+                  {% if valor_cancelado %}
+                  <li style="border-left: 0.4em solid #e3503e;">
+                    {% if data_cancelamento %}
+                    <p><b>{{ text_data_cancelamento }} {{ data_cancelamento }} {{ text_fuso_horario }}</b><br>{{ text_valor_cancelado }} <b>{{ valor_cancelado }}</b></p>
+                    {% else %}
+                    <p>{{ text_valor_cancelado_parcial }} <b>{{ valor_cancelado }}</b></p>
+                    {% endif %}
+                  </li>
+                  {% endif %}
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane" id="tab-details">
+            <div class="row">
+              <div class="col-sm-12">
+                <table class="table table-bordered">
+                  <tr>
+                    <td>{{ entry_order_id }}</td>
+                    <td><a href="{{ view_order }}">{{ order_id }}</a></td>
+                  </tr>
+                  <tr>
+                    <td>{{ entry_added }}</td>
+                    <td>{{ added }}</td>
+                  </tr>
+                  <tr>
+                    <td>{{ entry_total }}</td>
+                    <td>{{ total }}</td>
+                  </tr>
+                  <tr>
+                    <td>{{ entry_customer }}</td>
+                    <td><a href="{{ view_customer }}">{{ customer }}</a></td>
+                  </tr>
+                  <tr>
+                    <td>{{ entry_tid }}</td>
+                    <td>{{ tid }}</td>
+                  </tr>
+                  <tr>
+                    <td>{{ entry_nsu }}</td>
+                    <td>{{ nsu }}</td>
+                  </tr>
+                  <tr>
+                    <td>{{ entry_codigo_autorizacao }}</td>
+                    <td>{{ authorization_code }}</td>
+                  </tr>
+                  <tr>
+                    <td>{{ entry_parcelamento }}</td>
+                    <td>{{ installments }}x {{ operacao }}</td>
+                  </tr>
+                  <tr>
+                    <td>{{ entry_status }}</td>
+                    <td><strong>{{ status }}</strong></td>
+                  </tr>
+                  {% if type == 'credito' %}
+                  {% if clearsale %}
+                  <tr>
+                    <td>{{ entry_clearsale }}</td>
+                    <td>
+                      <form action="{{ clearsale_url }}" method="post" id="clearsale" target="iFrameStart" onSubmit="carregarIframe(this);">
+                        {% for name, value in clearsale_itens %}
+                        <input type="hidden" name="{{ name }}" value="{{ value }}" />
+                        {% endfor %}
+                      </form>
+                      <button id="button-clearsale" class="btn btn-warning" onclick="$('#clearsale').submit();"><i class="fa fa-shield"></i> {{ button_antifraude }}</button>
+                      <script type="text/javascript">
+                        function carregarIframe(form) {
+                          const src = "{{ clearsale_src }}";
+
+                          $('#button-clearsale').hide();
+                          $('#iFrameStart').show();
+                          $('#iFrameStart').attr("src", src);
+
+                          return true;
+                        }
+                      </script>
+                      <iframe style="display:none;" id="iFrameStart" name="iFrameStart" width="280" height="100" frameborder="0" scrolling="no"><p>{{ error_iframe }}</p></iframe>
+                    </td>
+                  </tr>
+                  {% endif %}
+                  {% endif %}
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane" id="tab-json-first-response">
+            <textarea wrap="off" rows="20" readonly class="form-control">{{ json_first_response }}</textarea>
+          </div>
+          <div class="tab-pane" id="tab-json-last-response">
+            <textarea wrap="off" rows="20" readonly class="form-control">{{ json_last_response }}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
+  <script type="text/javascript">
+    function formatar_moeda(valor) {
+      let value = valor.val().replace(/[\D]+/g, '');
+      if (value.length < 3) { value = ('000' + value).slice(-3); }
+      value = value.replace(/([0-9]{2})$/g, ".$1");
+      valor.val(Number(value).toFixed(2));
+    }
+
+    $('button[name="button-consultar"]').click(function() {
+      $.ajax({
+        url: '{{ view_consultar }}',
+        dataType: 'json',
+        beforeSend: function() {
+          $('button[name="button-consultar"]').button('loading');
+          $('#progress').html('<div class="alert alert-danger"><i class="fa fa-spinner fa-spin"></i> {{ text_consultando }}</div>');
+          $('html, body').animate({ scrollTop: 0 }, 'slow');
+        },
+        complete: function() {
+          $('button[name="button-consultar"]').button('reset');
+          $('.alert alert-danger').remove();
+        },
+        success: function(json) {
+          $('html, body').animate({ scrollTop: 0 }, 'slow');
+
+          if (json['error']) {
+            $('#progress').html('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '</div>');
+          } else {
+            $('#progress').html('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['mensagem'] + '</div>');
+
+            location.href = location.href;
+          }
+        }
+      });
+    });
+
+    $('button[name="button-capturar"]').click(function() {
+      bootbox.confirm({
+        message: "{{ text_confirm_capturar }}",
+        buttons: {
+          confirm: { label: '<i class="fa fa-check"></i> {{ text_confirm_yes }}', className: 'btn-success' },
+          cancel: { label: '{{ text_confirm_no }}', className: 'btn-danger' }
+        },
+        callback: function (result) {
+          if (result === true) {
+            $.ajax({
+              url: '{{ view_capturar }}',
+              dataType: 'json',
+              beforeSend: function() {
+                $('button[name="button-capturar"]').button('loading');
+                $('#progress').html('<div class="alert alert-danger"><i class="fa fa-spinner fa-spin"></i> {{ text_capturando }}</div>');
+                $('html, body').animate({ scrollTop: 0 }, 'slow');
+              },
+              complete: function() {
+                $('button[name="button-capturar"]').button('reset');
+                $('.alert alert-danger').remove();
+              },
+              success: function(json) {
+                $('html, body').animate({ scrollTop: 0 }, 'slow');
+
+                if (json['error']) {
+                  $('#progress').html('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '</div>');
+                } else {
+                  $('#progress').html('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['mensagem'] + '</div>');
+
+                  $('button[name="button-consultar"]').trigger('click');
+                }
+              }
+            });
+          }
+        }
+      });
+    });
+
+    $('input[name=cancelar_total][type=text]').on('keyup change', function() {
+      formatar_moeda($(this));
+    });
+
+    $('input[name="cancelar_total"]').on('keyup change', function() {
+      $('input[name="cancelar_total"]').closest('li').find('span.text-danger').remove();
+      $('button[name="button-cancelar"]').prop('disabled', false);
+
+      if ($(this).val() > parseFloat('{{ transaction_total }}')) {
+        $('input[name="cancelar_total"]').closest('li').append('<span class="text-danger">{{ error_cancelar_total }}</span>');
+        $('button[name="button-cancelar"]').prop('disabled', true);
+      }
+    });
+
+    $('button[name="button-cancelar"]').click(function() {
+      const total = $('input[name="cancelar_total"]').val().trim();
+
+      if (!total || total <= 0) {
+        $('input[name="cancelar_total"]').closest('li').find('span.text-danger').remove();
+        $('input[name="cancelar_total"]').closest('li').append('<span class="text-danger">{{ error_cancelar_total }}</span>');
+        return
+      }
+
+      bootbox.confirm({
+        message: "{{ text_confirm_cancelar }}",
+        buttons: {
+          confirm: { label: '<i class="fa fa-check"></i> {{ text_confirm_yes }}', className: 'btn-success' },
+          cancel: { label: '{{ text_confirm_no }}', className: 'btn-danger' }
+        },
+        callback: function (result) {
+          if (result === true) {
+            const data = {
+              total
+            }
+
+            $.ajax({
+              url: '{{ view_cancelar }}',
+              type: 'post',
+              dataType: 'json',
+              data,
+              beforeSend: function() {
+                $('button[name="button-cancelar"]').button('loading');
+                $('#progress').html('<div class="alert alert-danger"><i class="fa fa-spinner fa-spin"></i> {{ text_cancelando }}</div>');
+                $('html, body').animate({ scrollTop: 0 }, 'slow');
+              },
+              complete: function() {
+                $('button[name="button-cancelar"]').button('reset');
+                $('.alert alert-danger').remove();
+              },
+              success: function(json) {
+                $('html, body').animate({ scrollTop: 0 }, 'slow');
+
+                if (json['error']) {
+                  $('#progress').html('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '</div>');
+                } else {
+                  $('#progress').html('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['mensagem'] + '</div>');
+
+                  $('button[name="button-consultar"]').trigger('click');
+                }
+              }
+            });
+          }
+        }
+      });
+    });
+  </script>
+  <style>
+    ul.timeline { list-style-type: none; position: relative; }
+    ul.timeline:before { content: ' '; background: #d4d9df; display: inline-block; position: absolute; left: 29px; width: 2px; height: 100%; z-index: 400; }
+    ul.timeline > li { margin: 20px; padding: 10px; background-color: #f6f6f6; border-radius: 8px; border: 1px solid #e9e9e9; }
+    ul.timeline > li:before { content: ' '; background: white; display: inline-block; position: absolute; border-radius: 50%; border: 3px solid #00BCD4; left: 20px; width: 20px; height: 20px; z-index: 400; }
+  </style>
+</div>
+{{ footer }}

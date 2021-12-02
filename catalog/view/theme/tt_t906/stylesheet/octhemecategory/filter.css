@@ -1,0 +1,103 @@
+.layernavigation-module {
+    clear: left;
+    margin-bottom: 30px;
+}
+.layernavigation-module .panel{
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: none;
+}
+.layered-navigation-block { display: none; background-color : black; height : 100%; opacity : 0.35; position : fixed; top : 0; left: 0; width : 100%; z-index : 900; }
+.ajax-loader { display: none; z-index: 1000; position: fixed; top: 50%; left: 50%; }
+.layernavigation-module .layered-heading {color: #363636;text-transform: uppercase;font-size: 22px;background: none;border-radius: 0;box-shadow: none;margin-bottom: 50px;border-bottom: 2px solid #363636;padding: 0 0 4px 0;font-family: "bebasneue";}
+.filter-attribute-container {
+    margin-bottom: 37px;
+}
+.filter-attribute-container label {display: block;margin-bottom: 20px;font-size: 14px;color: #000;font-weight: 700;text-transform: uppercase;}
+.filter-attribute-container:last-child { margin-bottom:0; }
+.filter-attribute-container .remove-filter {color: red;position: absolute;right: 0;top: 50%;margin-top: -10px;font-size: 0;width: 20px;height: 20px;text-align: center;padding: 0;border: 0;}
+.filter-attribute-container .remove-filter i {line-height: inherit;}
+.filter-attribute-container .remove-filter:hover {opacity: 0.7;border: 0;}
+.filter-attribute-container .filter-clear-all { text-align: right; }
+.filter-attribute-container .filter-clear-all .clear-filter {color: #333;padding: 0 15px;display: inline-block;vertical-align: top;text-transform: capitalize;font-weight: 500;border-radius: 2px;}
+.filter-attribute-container .filter-clear-all .clear-filter:hover {color: #d8a638;}
+.filter-attribute-container .list-group-item {overflow: hidden;position: relative;border: 0;padding: 0;margin: 0;background: 0;border-radius: 0;}
+.filter-attribute-container .list-group-item p {margin: 0;line-height: 30px;}
+.filter-attribute-container .list-group-item .filter-price .input-price {width: 50px;margin: 0;border: none;background: none;}
+.filter-attribute-container .list-group-item .filter-price .input-price:hover { cursor: not-allowed; }
+.list-group .filter-attribute-container a.add-filter {border: 0;display: block;line-height: 30px;padding: 5px 0;font-size: 12px;color: #898989;text-transform: capitalize;}
+.list-group .filter-attribute-container a.add-filter:before {
+    content:"\f383";
+    font-family: "Ionicons";
+    width: 15px;
+    height: 15px;
+    line-height: 13px;
+    border: 1px solid #dfdfdf;
+    display: inline-block;
+    margin-right: 10px;
+    border-radius: 0;
+    text-align: center;
+    color: transparent;
+}
+.list-group .filter-attribute-container a.add-filter:hover {
+    color: #d8a638;
+}
+.list-group .filter-attribute-container a.add-filter:hover:before {
+    color: #d8a638;
+}
+.filter-attribute-remove-container {
+    background: none;
+    padding: 0;
+    margin: 0;
+}
+.filter-attribute-remove-container .filter-clear-all {
+    margin-bottom: 40px;
+    margin-top: 10px;
+}
+.filter-attribute-container.filter-price {
+    margin-bottom: 42px;
+}
+#slider-price {
+    height: 2px;
+    background: #dbdbdb;
+    border-radius: 0;
+    margin: 17px 0px 0px;
+    position: relative;
+}
+#slider-price .ui-widget-header {
+    background: #d8a638;
+    height: 100%;
+    border-radius: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.ui-slider .ui-slider-handle {
+    width: 22px;
+    height: 11px;
+    background: #fff;
+    border: 3px solid #d8a638;
+    border-radius: 10px;
+    position: absolute;
+    top: -5px;
+    cursor: pointer;
+}
+.ui-slider .ui-slider-handle:last-child {
+    margin-left: -22px;
+}
+.ui-slider .ui-slider-handle:hover {
+    background: #d8a638;
+}
+.filter-price .slider-values {
+    padding: 5px 0;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 12px;
+    color: #000000;
+    font-family: 'Oswald', sans-serif;
+}
+.filter-price .slider-values em {
+    margin-right: 25px;
+}
