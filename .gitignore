@@ -1,0 +1,8 @@
+./*.html
+./*.xml
+/admin/config.php
+./config.php
+./*.zip
+/image
+./php.ini
+/site
