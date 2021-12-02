@@ -203,8 +203,8 @@ class ModelCatalogProduct extends Model
 
 			$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
 		}
-		$fp = fopen($_SERVER['DOCUMENT_ROOT'] . "/log-proprio.txt", "wb");
-		fwrite($fp, $sql);
+		$fp = fopen($_SERVER['DOCUMENT_ROOT'] . "/log-proprio.txt", "a");
+		fwrite($fp, $sql . PHP_EOL);
 		fclose($fp);
 		$product_data = array();
 
