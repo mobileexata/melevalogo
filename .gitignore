@@ -6,3 +6,6 @@
 /image
 /php.ini
 /site
+.ftpquota
+.htaccess
+.user.ini
