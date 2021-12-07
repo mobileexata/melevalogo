@@ -6,7 +6,7 @@ class ModelExtensionReportProduct extends Model
 		$sql = "SELECT pd.name, p.model, p.viewed FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p.viewed > 0 ";
 
 		if (isset($data['filter_description']) && $data['filter_description']) {
-			$sql .= " AND pd.name like '%" . $this->db->scape($data['filter_description']) . "%' ";
+			$sql .= " AND pd.name like '%" . $this->db->escape($data['filter_description']) . "%' ";
 		}
 
 		$sql .= " ORDER BY p.viewed DESC";
