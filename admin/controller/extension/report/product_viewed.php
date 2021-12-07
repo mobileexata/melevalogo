@@ -1,6 +1,8 @@
 <?php
-class ControllerExtensionReportProductViewed extends Controller {
-	public function index() {
+class ControllerExtensionReportProductViewed extends Controller
+{
+	public function index()
+	{
 		$this->load->language('extension/report/product_viewed');
 
 		$this->document->setTitle($this->language->get('heading_title'));
@@ -60,16 +62,18 @@ class ControllerExtensionReportProductViewed extends Controller {
 
 		$this->response->setOutput($this->load->view('extension/report/product_viewed_form', $data));
 	}
-	
-	protected function validate() {
+
+	protected function validate()
+	{
 		if (!$this->user->hasPermission('modify', 'extension/report/product_viewed')) {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
 
 		return !$this->error;
 	}
-		
-	public function report() {
+
+	public function report()
+	{
 		$this->load->language('extension/report/product_viewed');
 
 		if (isset($this->request->get['page'])) {
@@ -77,14 +81,21 @@ class ControllerExtensionReportProductViewed extends Controller {
 		} else {
 			$page = 1;
 		}
-		
+
+		if (isset($this->request->get['filter_description']) && $this->request->get['filter_description']) {
+			$filter_description = $this->request->get['filter_description'];
+		} else {
+			$filter_description = null;
+		}
+
 		$data['reset'] = $this->url->link('extension/report/product_viewed/reset', 'user_token=' . $this->session->data['user_token'] . '&page={page}', true);
 
 		$this->load->model('extension/report/product');
 
 		$filter_data = array(
 			'start' => ($page - 1) * $this->config->get('config_limit_admin'),
-			'limit' => $this->config->get('config_limit_admin')
+			'limit' => $this->config->get('config_limit_admin'),
+			'filter_description' => $filter_description
 		);
 
 		$data['products'] = array();
@@ -109,7 +120,7 @@ class ControllerExtensionReportProductViewed extends Controller {
 				'percent' => $percent . '%'
 			);
 		}
-		
+
 		$data['user_token'] = $this->session->data['user_token'];
 
 		$url = '';
@@ -127,11 +138,12 @@ class ControllerExtensionReportProductViewed extends Controller {
 		$data['pagination'] = $pagination->render();
 
 		$data['results'] = sprintf($this->language->get('text_pagination'), ($product_total) ? (($page - 1) * $this->config->get('config_limit_admin')) + 1 : 0, ((($page - 1) * $this->config->get('config_limit_admin')) > ($product_total - $this->config->get('config_limit_admin'))) ? $product_total : ((($page - 1) * $this->config->get('config_limit_admin')) + $this->config->get('config_limit_admin')), $product_total, ceil($product_total / $this->config->get('config_limit_admin')));
-		
+
 		return $this->load->view('extension/report/product_viewed_info', $data);
 	}
 
-	public function reset() {
+	public function reset()
+	{
 		$this->load->language('extension/report/product_viewed');
 
 		if (!$this->user->hasPermission('modify', 'extension/report/product_viewed')) {
