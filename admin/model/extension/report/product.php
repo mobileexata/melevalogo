@@ -1,7 +1,15 @@
 <?php
-class ModelExtensionReportProduct extends Model {
-	public function getProductsViewed($data = array()) {
-		$sql = "SELECT pd.name, p.model, p.viewed FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p.viewed > 0 ORDER BY p.viewed DESC";
+class ModelExtensionReportProduct extends Model
+{
+	public function getProductsViewed($data = array())
+	{
+		$sql = "SELECT pd.name, p.model, p.viewed FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p.viewed > 0 ";
+
+		if (isset($data['filter_description']) && $data['filter_description']) {
+			$sql .= " AND pd.name like '%" . $this->db->scape($data['filter_description']) . "%' ";
+		}
+
+		$sql .= " ORDER BY p.viewed DESC";
 
 		if (isset($data['start']) || isset($data['limit'])) {
 			if ($data['start'] < 0) {
@@ -20,23 +28,27 @@ class ModelExtensionReportProduct extends Model {
 		return $query->rows;
 	}
 
-	public function getTotalProductViews() {
+	public function getTotalProductViews()
+	{
 		$query = $this->db->query("SELECT SUM(viewed) AS total FROM " . DB_PREFIX . "product");
 
 		return $query->row['total'];
 	}
 
-	public function getTotalProductsViewed() {
+	public function getTotalProductsViewed()
+	{
 		$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "product WHERE viewed > 0");
 
 		return $query->row['total'];
 	}
 
-	public function reset() {
+	public function reset()
+	{
 		$this->db->query("UPDATE " . DB_PREFIX . "product SET viewed = '0'");
 	}
 
-	public function getPurchased($data = array()) {
+	public function getPurchased($data = array())
+	{
 		$sql = "SELECT op.name, op.model, SUM(op.quantity) AS quantity, SUM((op.price + op.tax) * op.quantity) AS total FROM " . DB_PREFIX . "order_product op LEFT JOIN `" . DB_PREFIX . "order` o ON (op.order_id = o.order_id)";
 
 		if (!empty($data['filter_order_status_id'])) {
@@ -72,7 +84,8 @@ class ModelExtensionReportProduct extends Model {
 		return $query->rows;
 	}
 
-	public function getTotalPurchased($data) {
+	public function getTotalPurchased($data)
+	{
 		$sql = "SELECT COUNT(DISTINCT op.product_id) AS total FROM `" . DB_PREFIX . "order_product` op LEFT JOIN `" . DB_PREFIX . "order` o ON (op.order_id = o.order_id)";
 
 		if (!empty($data['filter_order_status_id'])) {
