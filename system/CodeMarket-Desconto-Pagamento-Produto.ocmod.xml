@@ -1,0 +1,311 @@
+<!--
+    Copyright (c) 2013-2021 Codemarket - Todos os direitos reservados
+    Codemarket Site: https://www.codemarket.com.br - Codemarket - Inovando seu E-commerce
+    Site Pessoal: https://felipoantonoff.com Felipo Antonoff
+!-->
+<modification>
+    <name><![CDATA[<font color="#00a99d"><b>Codemarket - Desconto e Taxa por Forma de Pagamento 1.7</b></font>]]></name>
+    <code><![CDATA[Codemarket - Desconto e Taxa por Forma de Pagamento]]></code>
+    <version><![CDATA[1.7]]></version>
+    <author><![CDATA[<font color="#00a99d"><b>Codemarket - codemarket.com.br</b></font>]]></author>
+    <link>https://www.codemarket.com.br</link>
+
+    <file path="admin/model/setting/extension.php">
+        <operation>
+            <search><![CDATA[
+                public function uninstall($type, $code) {
+            ]]></search>
+            <add position="after"><![CDATA[
+                if($code == 'code_desconto_pagamento'){
+                    return false;
+                }
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/model/setting/event.php">
+        <operation>
+            <search><![CDATA[
+                public function uninstall($type, $code) {
+            ]]></search>
+            <add position="after"><![CDATA[
+                if($code == 'code_desconto_pagamento'){
+                    return false;
+                }
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/model/module/code_activemodule.php">
+        <operation>
+            <search><![CDATA[
+                //eventActiveModule
+            ]]></search>
+            <add position="after"><![CDATA[
+                $this->load->model('module/codemarket_module');
+                $c487 = $this->model_module_codemarket_module->getModulo('487');
+
+                if(!empty($c487->ch) && $c487->ch == 1){
+                    $c487_status = 1;
+                }else{
+                    $c487_status = 0;
+                }
+
+                if(isset($c487->cg1)){
+                    $c487_order =  $c487->cg1;
+                }else{
+                     $c487_order = 10;
+                }
+
+                $this->model_module_codemarket_module->addExtensionStore('total', 'code_desconto_pagamento');
+                $this->model_module_codemarket_module->editSettingStore('total', 'code_desconto_pagamento', 'code_desconto_pagamento_status', $c487_status);
+                $this->model_module_codemarket_module->editSettingStore('total', 'code_desconto_pagamento', 'code_desconto_pagamento_sort_order', $c487_order);
+
+                $query487 = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "product` LIKE 'c487post'");
+                if (empty($query487->num_rows)) {
+                    $this->db->query("ALTER TABLE `" . DB_PREFIX . "product` ADD (`c487post` text )");
+                }
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- DESENVOLVIMENTO APENAS -->
+    <!--
+    <file path="admin/controller/common/dashboard.php">
+        <operation>
+            <search><![CDATA[
+                public function index() {
+            ]]></search>
+            <add position="after"><![CDATA[
+                $this->load->model('module/codemarket_module');
+                $c487 = $this->model_module_codemarket_module->getModulo('487');
+
+                if(!empty($c487->ch) && $c487->ch == 1){
+                    $c487_status = 1;
+                }else{
+                    $c487_status = 0;
+                }
+
+                if(isset($c487->cg1)){
+                    $c487_order =  $c487->cg1;
+                }else{
+                     $c487_order = 10;
+                }
+
+                $this->model_module_codemarket_module->addExtensionStore('total', 'code_desconto_pagamento');
+                $this->model_module_codemarket_module->editSettingStore('total', 'code_desconto_pagamento', 'code_desconto_pagamento_status', $c487_status);
+                $this->model_module_codemarket_module->editSettingStore('total', 'code_desconto_pagamento', 'code_desconto_pagamento_sort_order', $c487_order);
+
+                $query487 = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "product` LIKE 'c487post'");
+                if (empty($query487->num_rows)) {
+                    $this->db->query("ALTER TABLE `" . DB_PREFIX . "product` ADD (`c487post` text )");
+                }
+            ]]></add>
+        </operation>
+    </file>
+    -->
+
+    <file path="admin/controller/catalog/product.php">
+        <operation>
+            <search><![CDATA[
+                if (isset($this->request->post['product_layout'])) {
+            ]]></search>
+            <add position="before"><![CDATA[
+                $this->load->model('module/codemarket_module');
+                $c487 = $this->model_module_codemarket_module->getModulo('487');
+                $data['c487_p'] = [];
+
+                if(isset($c487->c11) && !empty($c487->c11)){
+                    $c487_pagamentos = [];
+                    for($i = 1; $i <= 4; $i++){
+                        $c1 = $i.'1';
+                        if(isset($c487->{"c$c1"}) && !empty($c487->{"c$c1"})){
+                            $c487_pagamentos[] = ['code' => $c487->{"c$c1"}];
+                        }
+                    }
+                              
+                    $c487_p = [];
+                    $i = 1;
+                    foreach ($c487_pagamentos as $p) {
+                        $this->load->language('extension/payment/' . $p['code']);
+                        $c487_p[$i] = [
+                            'payment_id' => $p['code'],
+                            'name' =>  trim($this->language->get('heading_title'))
+                        ];
+
+                        $i++;
+                    }
+                    $data['c487_p'] = $c487_p;
+
+                    $this->load->language('catalog/product');
+
+                }
+            ]]></add>
+        </operation>
+
+        <operation>
+            <search><![CDATA[
+                if (isset($this->request->post['product_layout'])) {
+            ]]></search>
+            <add position="before"><![CDATA[
+                if (!empty($this->request->post['c487post'])) {
+                    $data['c487post'] = $this->request->post['c487post'];
+                } elseif (!empty($product_info) && !empty($product_info['c487post'])) {
+                    $data['c487post'] = json_decode($product_info['c487post'],true);
+                } else {
+                    $data['c487post'] = '';
+                }
+            ]]>
+            </add>
+        </operation>
+    </file>
+
+    <file path="admin/model/catalog/product.php">
+        <operation>
+            <search><![CDATA[
+                if (isset($data['image'])) {
+            ]]></search>
+            <add position="before"><![CDATA[
+                if (!empty($data['c487post']) && !empty($product_id)) {
+                    $c487post = json_encode($data['c487post']);
+                    $this->db->query("UPDATE " . DB_PREFIX . "product SET c487post = '" .  $c487post . "' WHERE product_id = '" . (int)$product_id . "'");
+                }   
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/view/template/catalog/product_form.twig">
+        <operation>
+            <search><![CDATA[
+                <div class="tab-pane" id="tab-discount">
+            ]]></search>
+            <add position="after"><![CDATA[
+                {% if c487_p is defined and c487_p is not empty %}
+                    <legend>Codemarket - Desconto e Taxa por Pagamento e Produto</legend>
+
+                    {% for i, c487 in c487_p %}
+
+                        <h4> {{ c487.name }} </h4>
+
+                        <input type="text" name="c487post[{{ i }}][c1]" value="{{ c487.payment_id }}" class="hidden" />
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Desconto ou Taxa</label>
+                            <div class="col-sm-3">
+                                <input type="text" name="c487post[{{ i }}][c5]" value="{{ c487post[i].c5 }}" placeholder="Informe o valor, use - para taxa" class="form-control" />
+                            </div>
+                            <div class="col-sm-3">
+                                <select name="c487post[{{ i }}][c6]" class="form-control">
+                                    <option value="0">Escolha o Tipo</option>
+                                    {% if c487post[i].c6 is not empty and c487post[i].c6 == 2 %}
+                                        <option value="1">Porcentagem</option>
+                                        <option value="2" selected="selected">Fixo</option>
+                                    {% elseif c487post[i].c6 is not empty and c487post[i].c6 == 1 %}
+                                        <option value="1" selected="selected">Porcentagem</option>
+                                        <option value="2">Fixo</option>
+                                    {% else %}
+                                        <option value="1">Porcentagem</option>
+                                        <option value="2">Fixo</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                            <div class="col-sm-3">
+                                <select name="c487post[{{ i }}][ch]" class="form-control">
+                                {% if c487post[i].ch is not empty and c487post[i].ch == 1 %}
+                                    <option value="1" selected="selected">Habilitado</option>
+                                    <option value="2">Desabilitado</option>
+                                {% else %}
+                                    <option value="1">Habilitado</option>
+                                    <option value="2" selected="selected">Desabilitado</option>
+                                {% endif %}
+                                </select>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <legend>Descontos nativos Opencart</legend>
+               {% endif %}
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/checkout/payment_method.php">
+        <operation>
+            <search><![CDATA[
+                $data['payment_methods'] = $this->session->data['payment_methods'];
+            ]]></search>
+            <add position="replace"><![CDATA[
+                $this->load->model('extension/total/code_desconto_pagamento');
+                $method487 = $this->model_extension_total_code_desconto_pagamento->aviso($this->session->data['payment_methods']); 
+                $data['payment_methods'] = $method487;
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- CHECKOUT PRO OU LITE -->
+    <file path="catalog/controller/code_checkout/payment.php">
+        <operation>
+            <search><![CDATA[
+                $data['payment_methods'] = $this->session->data['payment_methods'];
+            ]]></search>
+            <add position="replace"><![CDATA[
+                $this->load->model('extension/total/code_desconto_pagamento');
+                $method487 = $this->model_extension_total_code_desconto_pagamento->aviso($this->session->data['payment_methods']); 
+                $data['payment_methods'] = $method487;
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/common/header.php">
+        <operation>
+            <search><![CDATA[
+                return $this->load->view('common/header', $data);
+            ]]></search>
+            <add position="before"><![CDATA[
+                $this->load->model('module/codemarket_module');
+                $c487 = $this->model_module_codemarket_module->getModulo('487');
+
+                if(!empty($c487->ch) && $c487->ch == 1 && !empty($c487->code_css)){
+                    $data['code487_css'] = trim($c487->code_css);
+                }else{
+                    $data['code487_css'] = '';
+                }
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/common/header.twig">
+        <operation>
+            <search><![CDATA[
+                </head>
+            ]]></search>
+            <add position="before"><![CDATA[
+                <style>
+                    .alert487 {
+                        padding: 2px;
+                        margin-bottom: 0px;
+                        margin-top: -2px;
+                        border: 1px solid transparent;
+                        border-radius: 4px;
+                    }
+
+                    {{ code487_css }}
+                </style>
+            ]]></add>
+        </operation>
+    </file>
+
+     <!-- VERSAO -->
+     <file path="catalog/model/module/code_activemodule.php">
+        <operation>
+            <search><![CDATA[
+                //eventVersionApp
+            ]]></search>
+            <add position="after"><![CDATA[
+                $data['487'] = [
+                    'version' => '1.7',
+                    'date' => '15/12/2021'
+                ];
+            ]]></add>
+        </operation>
+    </file>
+</modification>

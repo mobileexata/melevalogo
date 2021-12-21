@@ -1,0 +1,107 @@
+<!--
+    Copyright 2013-2021 Codemarket - Todos os direitos reservados.
+    Atualizado 27/09/2021
+!-->
+<modification>
+    <name><![CDATA[<font color="#00a99d"><b>Codemarket - Recuperar Carrinho Premium 1.5</b></font>]]></name>
+    <code><![CDATA[Codemarket - Recuperar Carrinho Premium para Opencart 3]]></code>
+    <version><![CDATA[1.5]]></version>
+    <author><![CDATA[<font color="#00a99d"><b>Codemarket - codemarket.com.br</b></font>]]></author>
+    <link>https://www.codemarket.com.br</link> 
+
+    <file path="catalog/model/module/code_activemodule.php">
+        <operation>
+            <search><![CDATA[
+                //eventActiveModule
+            ]]></search>
+            <add position="after"><![CDATA[
+                $this->db->query("CREATE TABLE IF NOT EXISTS code_carrinhos (
+                    code_carrinhos_id int NOT NULL AUTO_INCREMENT,
+                    session_id varchar(32) NOT NULL,
+                    cliente_id int NOT NULL,
+                    pedido_id int DEFAULT NULL,
+                    envios smallint DEFAULT 0,
+                    criado datetime NOT NULL,
+                    modificado datetime NOT NULL,
+                    PRIMARY KEY (code_carrinhos_id)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+                ");
+            ]]></add>
+        </operation>
+    </file>
+
+    <!-- DESENVOLVIMENTO APENAS -->
+    <!--
+    <file path="admin/controller/common/dashboard.php">
+        <operation>
+            <search><![CDATA[
+                public function index() {
+            ]]></search>
+            <add position="after"><![CDATA[
+                $this->db->query("CREATE TABLE IF NOT EXISTS code_carrinhos (
+                    code_carrinhos_id int NOT NULL AUTO_INCREMENT,
+                    session_id varchar(32) NOT NULL,
+                    cliente_id int NOT NULL,
+                    pedido_id int DEFAULT NULL,
+                    envios smallint DEFAULT 0,
+                    criado datetime NOT NULL,
+                    modificado datetime NOT NULL,
+                    PRIMARY KEY (code_carrinhos_id)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+                ");
+            ]]></add>
+        </operation>
+    </file>
+    --> 
+
+    <file path="catalog/controller/common/header.php">    
+        <operation>
+            <search><![CDATA[
+                $this->load->language('common/header');
+            ]]></search>
+            <add position="before"><![CDATA[
+                if (!empty($this->request->get['creturn'])) {
+                    $this->session->data['creturn'] = $this->request->get['creturn'];
+                } 
+            ]]></add>
+        </operation>
+    </file> 
+
+    <file path="catalog/model/checkout/order.php">    
+        <operation>
+            <search><![CDATA[
+                $customer_info = $this->model_account_customer->getCustomer($order_info['customer_id']);
+            ]]></search>
+            <add position="before"><![CDATA[
+                if(!empty($this->session->data['creturn'])){
+                    
+                    if(!empty($order_id)){
+                        $sessao_id = $this->session->data['creturn'];
+                        $this->db->query("UPDATE code_carrinhos SET
+                        pedido_id = '" . (int)$order_id . "',
+                        modificado = NOW()
+                        WHERE session_id  = '" . $this->db->escape($sessao_id) . "'
+                        ");
+                    }
+
+                    unset($this->session->data['creturn']);
+                }
+            ]]></add>
+        </operation>
+    </file> 
+
+    <!-- VERSAO -->
+    <file path="catalog/model/module/code_activemodule.php">
+        <operation>
+            <search><![CDATA[
+                //eventVersionApp
+            ]]></search>
+            <add position="after"><![CDATA[
+                $data['476'] = [
+                    'version' => '1.5',
+                    'date' => '27/09/2021'
+                ];
+            ]]></add>
+        </operation>
+    </file>
+</modification>
