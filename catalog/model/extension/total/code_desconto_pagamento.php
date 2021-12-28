@@ -239,26 +239,28 @@ class ModelExtensionTotalCodeDescontoPagamento extends Model
                         $q = $q->row['c487post'];
                         
                         $qpost = json_decode($q, true);
-
+                        
                         if (isset($p['price']) && !empty($qpost[$i]['c1'])
                             && $qpost[$i]['c1'] == $pagamento_cod
                             && !empty($qpost[$i]['c5'])
                             && !empty($qpost[$i]['c6'])
                             && !empty($qpost[$i]['ch'])
                             && $qpost[$i]['ch'] == 1
-                        ) {                         {
-                            if ($qpost[$i]['c6'] == 1) {
-                                $desconto += ((int)$qpost[$i]['c5']
-                                        / 100) * ($p['price']
-                                        * $p['quantity']);
-                            } else {
-                                $desconto += $qpost[$i]['c5']
-                                    * $p['quantity'];
+                        ) {
+                            {
+                                if ($qpost[$i]['c6'] == 1) {
+                                    $desconto += ((int)$qpost[$i]['c5']
+                                            / 100) * ($p['price']
+                                            * $p['quantity']);
+                                } else {
+                                    $desconto += $qpost[$i]['c5']
+                                        * $p['quantity'];
+                                }
+                                
+                                unset($produtos[$key]);
+                                $descontar += ($p['price']
+                                    * $p['quantity']);
                             }
-                            
-                            unset($produtos[$key]);
-                            $descontar += ($p['price']
-                                * $p['quantity']);
                         }
                     }
                 }
@@ -318,7 +320,7 @@ class ModelExtensionTotalCodeDescontoPagamento extends Model
                             $q = $q->row['c487post'];
                             
                             $qpost = json_decode($q, true);
-
+                            
                             if (isset($p['price']) && !empty($qpost[$i]['c1'])
                                 && $qpost[$i]['c1'] == $pagamento_cod
                                 && !empty($qpost[$i]['c5'])
