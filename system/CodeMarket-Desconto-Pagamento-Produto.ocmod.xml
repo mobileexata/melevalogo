@@ -1,12 +1,12 @@
 <!--
-    Copyright (c) 2013-2021 Codemarket - Todos os direitos reservados
+    Copyright (c) 2013-2022 Codemarket - Todos os direitos reservados
     Codemarket Site: https://www.codemarket.com.br - Codemarket - Inovando seu E-commerce
     Site Pessoal: https://felipoantonoff.com Felipo Antonoff
 !-->
 <modification>
-    <name><![CDATA[<font color="#00a99d"><b>Codemarket - Desconto e Taxa por Forma de Pagamento 1.7</b></font>]]></name>
+    <name><![CDATA[<font color="#00a99d"><b>Codemarket - Desconto e Taxa por Forma de Pagamento 1.8</b></font>]]></name>
     <code><![CDATA[Codemarket - Desconto e Taxa por Forma de Pagamento]]></code>
-    <version><![CDATA[1.7]]></version>
+    <version><![CDATA[1.8]]></version>
     <author><![CDATA[<font color="#00a99d"><b>Codemarket - codemarket.com.br</b></font>]]></author>
     <link>https://www.codemarket.com.br</link>
 
@@ -228,6 +228,7 @@
         </operation>
     </file>
 
+    <!-- CATALOGO -->
     <file path="catalog/controller/checkout/payment_method.php">
         <operation>
             <search><![CDATA[
@@ -241,7 +242,7 @@
         </operation>
     </file>
 
-    <!-- CHECKOUT PRO OU LITE -->
+    <!-- CHECKOUT PRO -->
     <file path="catalog/controller/code_checkout/payment.php">
         <operation>
             <search><![CDATA[
@@ -302,8 +303,8 @@
             ]]></search>
             <add position="after"><![CDATA[
                 $data['487'] = [
-                    'version' => '1.7',
-                    'date' => '15/12/2021'
+                    'version' => '1.8',
+                    'date' => '09/02/2022'
                 ];
             ]]></add>
         </operation>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @author    Felipo Antonoff <contato@codemarket.com.br>
- * @copyright Copyright © 2013-2021 Codemarket - Todos os direitos reservados
+ * @copyright Copyright © 2013-2022 Codemarket - Todos os direitos reservados
  * @link      https://www.codemarket.com.br Codemarket - Inovando seu E-commerce
  * @link      https://felipoantonoff.com Felipo Antonoff
  */
@@ -184,7 +184,17 @@ class ModelExtensionTotalCodeDescontoPagamento extends Model
      */
     public function aviso($method_data)
     {
-        if (empty($this->status)) {
+        /**
+         * code_informativo
+         * 4 = Não
+         * 3 = Sim Geral
+         * 2 = Sim - Primeira Compra Habilitado
+         * 1 = Sim - Primeira Compra Ativo Desconto
+         */
+        if (empty($this->status)
+            || (!empty($this->conf->code_informativo)
+                && (int)$this->conf->code_informativo === 3)
+        ) {
             return $method_data;
         }
         
@@ -207,8 +217,24 @@ class ModelExtensionTotalCodeDescontoPagamento extends Model
                 continue;
             }
             
+            $firstBuy = $i.'firstbuy';
+            
+            if (!empty($this->conf->code_informativo)
+                && (int)$this->conf->code_informativo === 2
+                && !empty($this->conf->{"c$firstBuy"})
+                && (int)$this->conf->{"c$firstBuy"} === 1
+            ) {
+                return $method_data;
+            }
+            
             $pagamento_cod = $method_data[$this->conf->{"c$c1"}]['code'];
             $discountFirst = $this->roleFirstBuy($total_geral, $i);
+            
+            if (!empty($discountFirst) && !empty($this->conf->code_informativo)
+                && (int)$this->conf->code_informativo === 1
+            ) {
+                return $method_data;
+            }
             
             //Desconto aplicado
             if ($this->conf->{"c$c1"} == $pagamento_cod
