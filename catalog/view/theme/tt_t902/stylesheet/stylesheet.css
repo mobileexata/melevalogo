@@ -237,11 +237,11 @@ a:hover,.banner-3 a:hover::before,
 	margin: 0 -15px;
 }
 
-@media only screen and (min-width : 320px) and (max-width : 480px) {
+/*@media only screen and (min-width : 320px) and (max-width : 480px) {
     .owl-item {
        width: 20rem !important;
     }
-}
+}*/
 
 .owl-container .owl-item {
 	padding: 0 15px;
