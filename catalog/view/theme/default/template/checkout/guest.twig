@@ -165,7 +165,11 @@
       </div>
       <div class="form-group required">
         <label class="control-label" for="input-payment-postcode">{{ entry_postcode }}</label>
-        <input type="text" name="postcode" value="{{ postcode }}" placeholder="{{ entry_postcode }}" id="input-payment-postcode" class="form-control cep" />
+        <input type="text" name="postcode" value="{{ postcode }}" placeholder="{{ entry_postcode }}" id="input-payment-postcode" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="input-payment-company">{{ entry_company }}</label>
+        <input type="text" name="company" value="{{ company }}" placeholder="{{ entry_company }}" id="input-payment-company" class="form-control" />
       </div>
       <div class="form-group required">
         <label class="control-label" for="input-payment-country">{{ entry_country }}</label>
@@ -196,10 +200,6 @@
         <label class="control-label" for="input-payment-zone">{{ entry_zone }}</label>
         <select name="zone_id" id="input-payment-zone" class="form-control">
         </select>
-      </div>
-      <div class="form-group">
-        <label class="control-label" for="input-payment-company">{{ entry_company }}</label>
-        <input type="text" name="company" value="{{ company }}" placeholder="{{ entry_company }}" id="input-payment-company" class="form-control" />
       </div>
       {% for custom_field in custom_fields %}
       {% if custom_field.location == 'address' %}
