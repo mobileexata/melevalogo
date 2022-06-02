@@ -1,8 +1,10 @@
 <?php
-class ControllerCheckoutRegister extends Controller {
-	public function index() {
+class ControllerCheckoutRegister extends Controller
+{
+	public function index()
+	{
 		$this->load->language('checkout/checkout');
-		
+
 		$data['entry_newsletter'] = sprintf($this->language->get('entry_newsletter'), $this->config->get('config_name'));
 
 		$data['customer_groups'] = array();
@@ -70,11 +72,12 @@ class ControllerCheckoutRegister extends Controller {
 		}
 
 		$data['shipping_required'] = $this->cart->hasShipping();
-		
+
 		$this->response->setOutput($this->load->view('checkout/register', $data));
 	}
 
-	public function save() {
+	public function save()
+	{
 		$this->load->language('checkout/checkout');
 
 		$json = array();
@@ -131,7 +134,7 @@ class ControllerCheckoutRegister extends Controller {
 				$json['error']['telephone'] = $this->language->get('error_telephone');
 			}
 
-			if ((utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 128)) {
+			if ((utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 256)) {
 				$json['error']['address_1'] = $this->language->get('error_address_1');
 			}
 
@@ -208,12 +211,12 @@ class ControllerCheckoutRegister extends Controller {
 
 			// Default Payment Address
 			$this->load->model('account/address');
-				
+
 			$address_id = $this->model_account_address->addAddress($customer_id, $this->request->post);
-			
+
 			// Set the address as default
 			$this->model_account_customer->editAddressId($customer_id, $address_id);
-			
+
 			// Clear any previous login attempts for unregistered accounts.
 			$this->model_account_customer->deleteLoginAttempts($this->request->post['email']);
 

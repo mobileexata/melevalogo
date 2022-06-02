@@ -1,8 +1,10 @@
 <?php
-class ControllerAccountAddress extends Controller {
+class ControllerAccountAddress extends Controller
+{
 	private $error = array();
 
-	public function index() {
+	public function index()
+	{
 		if (!$this->customer->isLogged()) {
 			$this->session->data['redirect'] = $this->url->link('account/address', '', true);
 
@@ -18,7 +20,8 @@ class ControllerAccountAddress extends Controller {
 		$this->getList();
 	}
 
-	public function add() {
+	public function add()
+	{
 		if (!$this->customer->isLogged()) {
 			$this->session->data['redirect'] = $this->url->link('account/address', '', true);
 
@@ -38,7 +41,7 @@ class ControllerAccountAddress extends Controller {
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			$this->model_account_address->addAddress($this->customer->getId(), $this->request->post);
-			
+
 			$this->session->data['success'] = $this->language->get('text_add');
 
 			$this->response->redirect($this->url->link('account/address', '', true));
@@ -47,7 +50,8 @@ class ControllerAccountAddress extends Controller {
 		$this->getForm();
 	}
 
-	public function edit() {
+	public function edit()
+	{
 		if (!$this->customer->isLogged()) {
 			$this->session->data['redirect'] = $this->url->link('account/address', '', true);
 
@@ -64,7 +68,7 @@ class ControllerAccountAddress extends Controller {
 		$this->document->addStyle('catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.css');
 
 		$this->load->model('account/address');
-		
+
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
 			$this->model_account_address->editAddress($this->request->get['address_id'], $this->request->post);
 
@@ -92,7 +96,8 @@ class ControllerAccountAddress extends Controller {
 		$this->getForm();
 	}
 
-	public function delete() {
+	public function delete()
+	{
 		if (!$this->customer->isLogged()) {
 			$this->session->data['redirect'] = $this->url->link('account/address', '', true);
 
@@ -130,7 +135,8 @@ class ControllerAccountAddress extends Controller {
 		$this->getList();
 	}
 
-	protected function getList() {
+	protected function getList()
+	{
 		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_home'),
 			'href' => $this->url->link('common/home')
@@ -218,7 +224,8 @@ class ControllerAccountAddress extends Controller {
 		$this->response->setOutput($this->load->view('account/address_list', $data));
 	}
 
-	protected function getForm() {
+	protected function getForm()
+	{
 		$data['breadcrumbs'] = array();
 
 		$data['breadcrumbs'][] = array(
@@ -297,7 +304,7 @@ class ControllerAccountAddress extends Controller {
 		} else {
 			$data['error_custom_field'] = array();
 		}
-		
+
 		if (!isset($this->request->get['address_id'])) {
 			$data['action'] = $this->url->link('account/address/add', '', true);
 		} else {
@@ -366,7 +373,7 @@ class ControllerAccountAddress extends Controller {
 
 		if (isset($this->request->post['country_id'])) {
 			$data['country_id'] = (int)$this->request->post['country_id'];
-		}  elseif (!empty($address_info)) {
+		} elseif (!empty($address_info)) {
 			$data['country_id'] = $address_info['country_id'];
 		} else {
 			$data['country_id'] = $this->config->get('config_country_id');
@@ -374,7 +381,7 @@ class ControllerAccountAddress extends Controller {
 
 		if (isset($this->request->post['zone_id'])) {
 			$data['zone_id'] = (int)$this->request->post['zone_id'];
-		}  elseif (!empty($address_info)) {
+		} elseif (!empty($address_info)) {
 			$data['zone_id'] = $address_info['zone_id'];
 		} else {
 			$data['zone_id'] = '';
@@ -386,7 +393,7 @@ class ControllerAccountAddress extends Controller {
 
 		// Custom fields
 		$data['custom_fields'] = array();
-		
+
 		$this->load->model('account/custom_field');
 
 		$custom_fields = $this->model_account_custom_field->getCustomFields($this->config->get('config_customer_group_id'));
@@ -396,7 +403,7 @@ class ControllerAccountAddress extends Controller {
 				$data['custom_fields'][] = $custom_field;
 			}
 		}
-		
+
 		if (isset($this->request->post['custom_field']['address'])) {
 			$data['address_custom_field'] = $this->request->post['custom_field']['address'];
 		} elseif (isset($address_info)) {
@@ -425,7 +432,8 @@ class ControllerAccountAddress extends Controller {
 		$this->response->setOutput($this->load->view('account/address_form', $data));
 	}
 
-	protected function validateForm() {
+	protected function validateForm()
+	{
 		if ((utf8_strlen(trim($this->request->post['firstname'])) < 1) || (utf8_strlen(trim($this->request->post['firstname'])) > 32)) {
 			$this->error['firstname'] = $this->language->get('error_firstname');
 		}
@@ -434,7 +442,7 @@ class ControllerAccountAddress extends Controller {
 			$this->error['lastname'] = $this->language->get('error_lastname');
 		}
 
-		if ((utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 128)) {
+		if ((utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 256)) {
 			$this->error['address_1'] = $this->language->get('error_address_1');
 		}
 
@@ -476,7 +484,8 @@ class ControllerAccountAddress extends Controller {
 		return !$this->error;
 	}
 
-	protected function validateDelete() {
+	protected function validateDelete()
+	{
 		if ($this->model_account_address->getTotalAddresses() == 1) {
 			$this->error['warning'] = $this->language->get('error_delete');
 		}

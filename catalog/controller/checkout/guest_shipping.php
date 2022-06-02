@@ -1,6 +1,8 @@
 <?php
-class ControllerCheckoutGuestShipping extends Controller {
-	public function index() {
+class ControllerCheckoutGuestShipping extends Controller
+{
+	public function index()
+	{
 		$this->load->language('checkout/checkout');
 
 		if (isset($this->session->data['shipping_address']['firstname'])) {
@@ -63,7 +65,7 @@ class ControllerCheckoutGuestShipping extends Controller {
 
 		// Custom Fields
 		$this->load->model('account/custom_field');
-		
+
 		$custom_fields = $this->model_account_custom_field->getCustomFields($this->session->data['guest']['customer_group_id']);
 
 		foreach ($custom_fields as $custom_field) {
@@ -71,17 +73,18 @@ class ControllerCheckoutGuestShipping extends Controller {
 				$data['custom_fields'][] = $custom_field;
 			}
 		}
-		
+
 		if (isset($this->session->data['shipping_address']['custom_field'])) {
 			$data['address_custom_field'] = $this->session->data['shipping_address']['custom_field'];
 		} else {
 			$data['address_custom_field'] = array();
 		}
-		
+
 		$this->response->setOutput($this->load->view('checkout/guest_shipping', $data));
 	}
 
-	public function save() {
+	public function save()
+	{
 		$this->load->language('checkout/checkout');
 
 		$json = array();
@@ -110,7 +113,7 @@ class ControllerCheckoutGuestShipping extends Controller {
 				$json['error']['lastname'] = $this->language->get('error_lastname');
 			}
 
-			if ((utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 128)) {
+			if ((utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 256)) {
 				$json['error']['address_1'] = $this->language->get('error_address_1');
 			}
 
@@ -140,7 +143,7 @@ class ControllerCheckoutGuestShipping extends Controller {
 			$custom_fields = $this->model_account_custom_field->getCustomFields($this->session->data['guest']['customer_group_id']);
 
 			foreach ($custom_fields as $custom_field) {
-				if ($custom_field['location'] == 'address') { 
+				if ($custom_field['location'] == 'address') {
 					if ($custom_field['required'] && empty($this->request->post['custom_field'][$custom_field['location']][$custom_field['custom_field_id']])) {
 						$json['error']['custom_field' . $custom_field['custom_field_id']] = sprintf($this->language->get('error_custom_field'), $custom_field['name']);
 					} elseif (($custom_field['type'] == 'text') && !empty($custom_field['validation']) && !filter_var($this->request->post['custom_field'][$custom_field['location']][$custom_field['custom_field_id']], FILTER_VALIDATE_REGEXP, array('options' => array('regexp' => $custom_field['validation'])))) {

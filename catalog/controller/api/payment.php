@@ -1,6 +1,8 @@
 <?php
-class ControllerApiPayment extends Controller {
-	public function address() {
+class ControllerApiPayment extends Controller
+{
+	public function address()
+	{
 		$this->load->language('api/payment');
 
 		// Delete old payment address, payment methods and method so not to cause any issues if there is an error
@@ -40,7 +42,7 @@ class ControllerApiPayment extends Controller {
 				$json['error']['lastname'] = $this->language->get('error_lastname');
 			}
 
-			if ((utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 128)) {
+			if ((utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 256)) {
 				$json['error']['address_1'] = $this->language->get('error_address_1');
 			}
 
@@ -128,7 +130,7 @@ class ControllerApiPayment extends Controller {
 				);
 
 				$json['success'] = $this->language->get('text_address');
-				
+
 				unset($this->session->data['payment_method']);
 				unset($this->session->data['payment_methods']);
 			}
@@ -138,9 +140,10 @@ class ControllerApiPayment extends Controller {
 		$this->response->setOutput(json_encode($json));
 	}
 
-	public function methods() {
+	public function methods()
+	{
 		$this->load->language('api/payment');
-		
+
 		// Delete past shipping methods and method just in case there is an error
 		unset($this->session->data['payment_methods']);
 		unset($this->session->data['payment_method']);
@@ -154,7 +157,7 @@ class ControllerApiPayment extends Controller {
 			if (!isset($this->session->data['payment_address'])) {
 				$json['error'] = $this->language->get('error_address');
 			}
-			
+
 			if (!$json) {
 				// Totals
 				$totals = array();
@@ -183,7 +186,7 @@ class ControllerApiPayment extends Controller {
 				foreach ($results as $result) {
 					if ($this->config->get('total_' . $result['code'] . '_status')) {
 						$this->load->model('extension/total/' . $result['code']);
-						
+
 						// We have to put the totals in an array so that they pass by reference.
 						$this->{'model_extension_total_' . $result['code']}->getTotal($total_data);
 					}
@@ -236,7 +239,8 @@ class ControllerApiPayment extends Controller {
 		$this->response->setOutput(json_encode($json));
 	}
 
-	public function method() {
+	public function method()
+	{
 		$this->load->language('api/payment');
 
 		// Delete old payment method so not to cause any issues if there is an error

@@ -1,6 +1,8 @@
 <?php
-class ControllerCheckoutPaymentAddress extends Controller {
-	public function index() {
+class ControllerCheckoutPaymentAddress extends Controller
+{
+	public function index()
+	{
 		$this->load->language('checkout/checkout');
 
 		if (isset($this->session->data['payment_address']['address_id'])) {
@@ -31,7 +33,7 @@ class ControllerCheckoutPaymentAddress extends Controller {
 
 		// Custom Fields
 		$data['custom_fields'] = array();
-		
+
 		$this->load->model('account/custom_field');
 
 		$custom_fields = $this->model_account_custom_field->getCustomFields($this->config->get('config_customer_group_id'));
@@ -51,7 +53,8 @@ class ControllerCheckoutPaymentAddress extends Controller {
 		$this->response->setOutput($this->load->view('checkout/payment_address', $data));
 	}
 
-	public function save() {
+	public function save()
+	{
 		$this->load->language('checkout/checkout');
 
 		$json = array();
@@ -87,7 +90,7 @@ class ControllerCheckoutPaymentAddress extends Controller {
 
 		if (!$json) {
 			$this->load->model('account/address');
-							
+
 			if (isset($this->request->post['payment_address']) && $this->request->post['payment_address'] == 'existing') {
 				if (empty($this->request->post['address_id'])) {
 					$json['error']['warning'] = $this->language->get('error_address');
@@ -110,7 +113,7 @@ class ControllerCheckoutPaymentAddress extends Controller {
 					$json['error']['lastname'] = $this->language->get('error_lastname');
 				}
 
-				if ((utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 128)) {
+				if ((utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 256)) {
 					$json['error']['address_1'] = $this->language->get('error_address_1');
 				}
 
@@ -157,7 +160,7 @@ class ControllerCheckoutPaymentAddress extends Controller {
 					// If no default address ID set we use the last address
 					if (!$this->customer->getAddressId()) {
 						$this->load->model('account/customer');
-						
+
 						$this->model_account_customer->editAddressId($this->customer->getId(), $address_id);
 					}
 

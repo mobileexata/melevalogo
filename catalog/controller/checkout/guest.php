@@ -1,6 +1,8 @@
 <?php
-class ControllerCheckoutGuest extends Controller {
-	public function index() {
+class ControllerCheckoutGuest extends Controller
+{
+	public function index()
+	{
 		$this->load->language('checkout/checkout');
 
 		$data['customer_groups'] = array();
@@ -136,11 +138,12 @@ class ControllerCheckoutGuest extends Controller {
 		} else {
 			$data['captcha'] = '';
 		}
-		
+
 		$this->response->setOutput($this->load->view('checkout/guest', $data));
 	}
 
-	public function save() {
+	public function save()
+	{
 		$this->load->language('checkout/checkout');
 
 		$json = array();
@@ -178,7 +181,7 @@ class ControllerCheckoutGuest extends Controller {
 				$json['error']['telephone'] = $this->language->get('error_telephone');
 			}
 
-			if ((utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 128)) {
+			if ((utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 256)) {
 				$json['error']['address_1'] = $this->language->get('error_address_1');
 			}
 
@@ -218,8 +221,8 @@ class ControllerCheckoutGuest extends Controller {
 				if ($custom_field['required'] && empty($this->request->post['custom_field'][$custom_field['location']][$custom_field['custom_field_id']])) {
 					$json['error']['custom_field' . $custom_field['custom_field_id']] = sprintf($this->language->get('error_custom_field'), $custom_field['name']);
 				} elseif (($custom_field['type'] == 'text') && !empty($custom_field['validation']) && !filter_var($this->request->post['custom_field'][$custom_field['location']][$custom_field['custom_field_id']], FILTER_VALIDATE_REGEXP, array('options' => array('regexp' => $custom_field['validation'])))) {
-                    $json['error']['custom_field' . $custom_field['custom_field_id']] = sprintf($this->language->get('error_custom_field'), $custom_field['name']);
-                }
+					$json['error']['custom_field' . $custom_field['custom_field_id']] = sprintf($this->language->get('error_custom_field'), $custom_field['name']);
+				}
 			}
 
 			// Captcha
