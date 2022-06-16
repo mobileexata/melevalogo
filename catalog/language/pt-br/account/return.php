@@ -31,7 +31,7 @@ $_['column_product']     = 'Produto';
 $_['column_model']       = 'Modelo';
 $_['column_quantity']    = 'Quantidade';
 $_['column_price']       = 'Preço';
-$_['column_opened']      = 'Embalagem aberta?';
+$_['column_opened']      = 'Necessidade de nova embalagem para envio?';
 $_['column_comment']     = 'Comentário';
 $_['column_reason']      = 'Motivo';
 $_['column_action']      = 'Ação';
@@ -47,7 +47,7 @@ $_['entry_product']      = 'Produto';
 $_['entry_model']        = 'Modelo';
 $_['entry_quantity']     = 'Quantidade';
 $_['entry_reason']       = 'Motivo';
-$_['entry_opened']       = 'Embalagem aberta?';
+$_['entry_opened']       = 'Necessidade de nova embalagem para envio?';
 $_['entry_fault_detail'] = 'Detalhes';
 
 // Error
