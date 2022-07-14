@@ -3986,8 +3986,11 @@ margin-bottom: 17px;
 	.logo-container {
 		max-width: 50%;
 	}
-	.module-title {
-		margin-top: 60px;
+	.font-bebasneue {
+		font-size: 16px;
+	}
+	.module-title > h2{
+		font-size: 20px;
 	}
 	.static-welcome {
 		margin-top: 65px;
@@ -4314,4 +4317,8 @@ h4.product-name > a {
 	-webkit-line-clamp: 1;
 	line-clamp: 1;
 	-webkit-box-orient: vertical;
+}
+
+div.text-center > div.newletter-title {
+	margin-top: 7rem;
 }
