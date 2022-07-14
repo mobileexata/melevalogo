@@ -4306,3 +4306,12 @@ margin-bottom: 17px;
 .btn-quickview {
 	display: none !important;
 }
+
+h4.product-name > a {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 1;
+	line-clamp: 1;
+	-webkit-box-orient: vertical;
+}
