@@ -69,16 +69,18 @@
 <div class="container" id="dialog">
 	<div class="text-center">
 		<div class="newletter-title">
-			<h2 class="font-bebasneue">Receba novidades e promoções</h2>
+			<h2 class="font-bebasneue">Fique por dentro</h2>
 		</div>
 		<div class="box-content newleter-content">
 			<div id="frm_subscribe">
 				<form name="subscribe" id="subscribe" class="form-inline">
 					<div class="form-group">
-						<label for="subscribe_email">* Digite seu endereço do e-mail aqui...</label>
-						<input type="text" value="" name="subscribe_email" id="subscribe_email" class="form-control margin5 input-subscribe-email">
+						<input type="text" value="" placeholder="Nome" name="subscribe_name" id="subscribe_name" class="form-control margin5 input-subscribe-name">
 					</div>
-					<button type="button" class="button margin5" onclick="email_subscribe()" style="line-height: 34px !important;">Inscrever-Se!</button>
+					<div class="form-group">
+						<input type="text" value="" placeholder="E-mail" name="subscribe_email" id="subscribe_email" class="form-control margin5 input-subscribe-email">
+					</div>
+					<button type="button" class="button margin5" onclick="email_subscribe()" style="line-height: 34px !important;">Cadastrar!</button>
 				</form>
 			</div><!-- /#frm_subscribe -->
 		</div>
