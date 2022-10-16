@@ -4046,10 +4046,7 @@ margin-bottom: 17px;
 		left: 0;
 		right: 0;
 		top: 0;
-		background-color: #000000;
-	}
-	.common-home .header-inner:hover {
-		background-color: #000000;
+		background-color: #434343;
 	}
 }
 @media(min-width: 768px) {
