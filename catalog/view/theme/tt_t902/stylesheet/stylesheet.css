@@ -562,7 +562,7 @@ header {
 	text-align: center;
 	padding: 0 60px;
 	position: relative;
-	background: #434343;
+	background: #111723;
 	z-index: 10;
 	border-bottom: 1px solid rgba(255,255,255,0.1);
 }
@@ -1424,7 +1424,7 @@ header .btn-group .dropdown-menu .item-selected{
 	padding: 0;
 	border-radius: 100%;
 	text-align: center;
-	color: #434343;
+	color: #111723;
 }
 .item-inner .action-links  button.btn-compare {
 	margin: 0 8px;
@@ -1651,7 +1651,7 @@ margin-bottom: 7px;
 	font-size: 26px;
 	font-weight: normal;
 	margin: 0;
-	color: #434343;
+	color: #111723;
 	letter-spacing: 0.2em;
 	font-family:"open-sans-bold";
 }
@@ -1824,7 +1824,7 @@ margin-bottom: 7px;
 	text-transform: uppercase;
 	font-size: 16px;
 	font-weight: 700;
-	color: #434343;
+	color: #111723;
 }
 .module-style2 .product-name {
 	margin-bottom: 18px;
@@ -2358,7 +2358,7 @@ margin-bottom: 7px;
     line-height: 24px;
 }
 .ma-corporate-about .block-wrapper .text-des p {
-  color: #434343;
+  color: #111723;
   font-weight: 700;
   text-transform: uppercase;
   font-size: 12px;
@@ -2367,7 +2367,7 @@ margin-bottom: 7px;
   letter-spacing: 0.025em;
 }
 .ma-corporate-about .block-wrapper .text-des span {
-  color: #434343;
+  color: #111723;
   display: block;
   letter-spacing: 0.05em;
 }
@@ -2459,7 +2459,7 @@ margin-bottom: 7px;
 	position: relative;
 	margin-top: 0;
 	margin-bottom: 15px;
-	color: #434343;
+	color: #111723;
 }
 .articles-date {
 	font-size: 13px;
@@ -2635,7 +2635,7 @@ margin-bottom: 7px;
 	
 }
 .follow label {
-	color: #434343;
+	color: #111723;
     font-size: 18px;
     line-height: 22px;
     text-transform: uppercase;
@@ -2777,7 +2777,7 @@ footer .col-footer.col1 .footer-title {
 	display:none;
 }
 .footer-title h5{
-	color: #434343;
+	color: #111723;
 	font-size: 18px;
 	line-height: 22px;
 	text-transform: uppercase;
@@ -3868,7 +3868,7 @@ margin-bottom: 17px;
 	font-weight: 400;
 }
 #cart p.cart-button a:hover{
-	color: #434343;
+	color: #111723;
 	background: #fff;
 	border-color: #fff;
 }
@@ -4046,7 +4046,7 @@ margin-bottom: 17px;
 		left: 0;
 		right: 0;
 		top: 0;
-		background-color: #434343;
+		background-color: #111723;
 	}
 }
 @media(min-width: 768px) {
