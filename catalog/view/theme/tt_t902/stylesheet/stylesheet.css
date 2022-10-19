@@ -593,7 +593,7 @@ header .box-setting {
 }
 .setting-button,#cart > button {
 	font-size: 0;
-	color: #fff;
+	color: #111723;
 	width: 40px;
 	border: 0;
 	padding: 0;
@@ -723,7 +723,7 @@ header .btn-group .dropdown-menu .item-selected{
 /* Search */
 .search-button {
 	font-size: 18px;
-	color: #fff;
+	color: #111723;
 	height: 40px;
 	width: 40px;
 	line-height: 40px;
@@ -4263,7 +4263,7 @@ margin-bottom: 17px;
 /* Search */
 .wishlist-button {
 	font-size: 18px;
-	color: #fff;
+	color: #111723;
 	height: 40px;
 	width: 40px;
 	line-height: 40px;
